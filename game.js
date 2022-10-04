@@ -1,4 +1,4 @@
-class game{
+class Game{
 constructor(){
 this.activeLevel = "test.json"; 
 this.thisSub = new boat(100,100);

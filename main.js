@@ -13,9 +13,9 @@ const firebaseConfig = {
 var tboat;
 
 function setup() {
-    createCanvas(600, 600);
+    createCanvas(1000, 950);
 // let tGame = new game();
- tboat = new boat(100,100);
+ tboat = new Boat(100,100);
 }
 
 function draw() {
@@ -30,6 +30,13 @@ this.tboat.display();
 
 }
 
+function clamp(value, clamp){
+    value = Math.min(Math.max(value, -clamp), clamp)
+    if (value < .001 && value > -.001)
+    value =0;
+    return value;
+    }
+    
 let levelData = {};
 levelData.Players = [];
 levelData.Terrain = [];

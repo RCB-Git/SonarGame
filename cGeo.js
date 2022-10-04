@@ -4,22 +4,17 @@ class cShape {
         this.vert = [];
         this.sides = [];
 
-        this.vel = createVector(5, 0);
+        this.vel = createVector(0, 0);
 
         this.xPos = 0;
         this.yPos = 0;
 
         this.max = 0;
+        this.recalculate();
 
-        for (let i = 0; i < pts.length; i += 2) {
-            pts[i] += x;
-            pts[i + 1] += y;
-            this.xPos += pts[i];
-            this.yPos += pts[i + 1];
-        } //adjust array
-        this.xPos /= pts.length / 2;
-        this.yPos /= pts.length / 2;
-
+ 
+        
+        
         for (let i = 0; i < pts.length; i += 2) {
             this.vert.push(new cPoint(pts[i], pts[i + 1]));
             this.sides.push(
@@ -36,7 +31,7 @@ class cShape {
     }
 
     display() {
-        //point(this.xPos, this.yPos); // show center
+        point(this.xPos, this.yPos); // show center
         //circle(this.xPos, this.yPos, 2 * this.max); // show C-range
 
         this.move();
@@ -46,12 +41,28 @@ class cShape {
 
     } // draws the shape
 
+
+    recalculate(){
+        //mathmatical center
+        let xSum =0;
+        let ySum =0;
+        for(let i = 0; i < this.vert.length; i++)
+        {
+            xSum+=this.vert[i].x;
+            ySum+=this.vert[i].y;
+
+        }
+        this.xPos = xSum / this.vert.length;
+        this.yPos = ySum / this.vert.length;
+
+    }
     move() {
-
         for (let i = 0; i < this.vert.length; i++) { this.vert[i].add(this.vel); }
-
-
-
+    }
+    expand(by){
+        for(let i = 0; i < this.vert.length; i++){
+            this.vert[i].slide(this.vert[0],by);
+        }
     }
 
     checkP(p) {
@@ -77,7 +88,6 @@ class cShape {
         return false;
     } // checks to see if a shape is touching T/F
 
-    bounce() { }
     getClosestSide(p) {
         let min = 0;
         let d = this.sides[0].PLD(p);
@@ -90,6 +100,7 @@ class cShape {
         }
         return this.sides[min];
     }
+
 } // custom Shape object, accepts control point X, Y and an even array of positions to put vertexes. Calls cPoint & cLine as auxilarry classes.
 
 class cPoint {
@@ -114,6 +125,14 @@ class cPoint {
     add(vec) {
         this.x += vec.x;
         this.y += vec.y;
+    }
+    slide(p,by){
+       
+        let delta = createVector(this.x-p.x, this.y-p.y ).normalize().add(by);
+        line(delta.x + this.x,delta.y+ this.y,this.x,this.y);
+        this.x = delta.x + this.x;
+        this.y = delta.y + this.y;
+
     }
 } // Custom point object. Accepts an X and Y. Used with cLine and cShape
 

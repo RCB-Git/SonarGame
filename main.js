@@ -13,7 +13,7 @@ const firebaseConfig = {
 var tboat;
 
 function setup() {
-    createCanvas(1000, 950);
+    createCanvas(850, 850);
 // let tGame = new game();
  tboat = new Boat(100,100);
 }
@@ -26,7 +26,7 @@ function draw() {
 
 this.tboat.update();
 this.tboat.display();
-
+shapeEditor()
 
 }
 
@@ -45,29 +45,28 @@ levelData.Props = [];
 
 
 
-// let editorVertexes = [];
-// function shapeEditor() {
-//     for (let i = 0; i < editorVertexes.length; i += 2)
-//         point(editorVertexes[i], editorVertexes[i + 1]);
+let editorVertexes = [];
+function shapeEditor() {
+    for (let i = 0; i < editorVertexes.length; i += 2)
+        point(editorVertexes[i], editorVertexes[i + 1]);
 
-//     for (let i = 0; i < levelData.Terrain.length; i++)
-//         levelData.Terrain[i].display();
-// }
-// function keyPressed() {
-//     if (key == " ") {
-//         editorVertexes.push(mouseX);
-//         editorVertexes.push(mouseY);
-//     }
-//     if (key == "q" && editorVertexes.length > 2) {
-//         levelData.Terrain.push(new cShape(0, 0, editorVertexes));
-//         editorVertexes = [];
-//     }
-//     if (key == "d") {
-//         levelData.Terrain.splice(null, levelData.Terrain.length); //delete most recent shape??
-//         editorVertexes = [];
-//     }
-//     if (key == "s") {
-//         saveJSON(levelData, "levelData");
-//     }
-//     return false;
-// }
+    for (let i = 0; i < levelData.Terrain.length; i++){
+        levelData.Terrain[i].display();
+        levelData.Terrain[i].expand(.01);
+    }
+}
+function keyPressed() {
+    if (key == " ") {
+        editorVertexes.push(mouseX);
+        editorVertexes.push(mouseY);
+    }
+    if (key == "q" && editorVertexes.length > 2) {
+        levelData.Terrain.push(new cShape(0, 0, editorVertexes));
+        editorVertexes = [];
+    }
+
+    if (key == "s") {
+        saveJSON(levelData, "levelData");
+    }
+    return false;
+}

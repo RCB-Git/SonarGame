@@ -1,7 +1,4 @@
-let sound;
-function preload(){
-     sound = loadSound('Sounds/ping1.wav');
-}
+
 class Boat {
     constructor(sx, sy) {
         this.x = sx;
@@ -27,29 +24,32 @@ class Boat {
         this.pcooldown = 100;
     }
     update() {
-
+        this.fcooldown++;
+        this.fcooldown = constrain(this.fcooldown, 0, 100);
+        
         this.x += this.v.x;
         this.y += this.v.y;
 
+        this.pos = new cPoint(this.x, this.y);
         this.v.mult(this.friction)
         if (this.controlled)
             this.controlls();
 
     }
     display() {
-
+        circle(this.x, this.y, 100)
         push();
         let size = 14;
         translate(this.x, this.y)
         rotate(this.heading);
-        line(0, -size / 2, size, 0);
-        line( size, 0,0, size / 2)
-        stroke(255,0,0)
-        point(0,-size / 2);
-        stroke(0,255,0)
-        point(0,size / 2);
-            // 0, size / 2 right
-            //  0, -size / 2 left
+        line(0, 0, -size, size / 2);
+        line(0, 0, -size, -size / 2);
+        if (false) {
+            stroke(255, 0, 0)
+            point(0, -size / 2);
+            stroke(0, 255, 0)
+            point(0, size / 2);
+        }
         pop();
     }
     controlls() {
@@ -59,7 +59,7 @@ class Boat {
         if (keyIsDown(87))// w
             add.add(p5.Vector.fromAngle(this.heading, this.accel))
         if (keyIsDown(83))//s
-            add.add(p5.Vector.fromAngle(this.heading, -this.accel*.25))
+            add.add(p5.Vector.fromAngle(this.heading, -this.accel * .25))
         if (keyIsDown(65))//a
             this.slewfloat -= this.slewSpeed;
         if (keyIsDown(68))//d
@@ -69,17 +69,19 @@ class Boat {
 
         //Fix values
 
-        this.slewfloat = clamp(this.slewfloat, this.maxslew) *this.slewfriction;
+        this.slewfloat = constrain(this.slewfloat, -this.maxslew, this.maxslew) * this.slewfriction;
         this.heading += this.slewfloat;
 
         this.v.limit();
         this.v.add(add);
     }
-    ping(){
-        sound.pan(frameCount * .01  % 2 -1)
-    sound.play();
+    ping() {
+        if (this.fcooldown == 100) {
+            this.fcooldown = 0;
+            let ping = new Sound(this.pos, 100, 'SonarOut.ogg' )
+            ping.soundOff()
+        }
     }
-
 }
 
 

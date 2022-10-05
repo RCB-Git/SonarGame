@@ -11,62 +11,62 @@ const firebaseConfig = {
 
 // let tGame;
 var tboat;
-
+let deltaT;
+let lastT;
+let temp;
+function preLoad(){
+    temp = loadSound('Sounds/SonarOut.ogg')
+}
 function setup() {
     createCanvas(850, 850);
-// let tGame = new game();
- tboat = new Boat(100,100);
+    // let tGame = new game();
+    tboat = new Boat(100, 100);
+    frameRate(50)
 }
 
 function draw() {
+    let deltaT = millis() - lastT;
+    lastT = millis();
+
     background(60);
     stroke(255);
     strokeWeight(4);
     noFill();
 
-this.tboat.update();
-this.tboat.display();
-shapeEditor()
+    this.tboat.update();
+    this.tboat.display();
+    // shapeEditor()
 
 }
 
-function clamp(value, clamp){
-    value = Math.min(Math.max(value, -clamp), clamp)
-    if (value < .001 && value > -.001)
-    value =0;
-    return value;
-    }
-    
 let levelData = {};
 levelData.Players = [];
 levelData.Terrain = [];
 levelData.Enemies = [];
 levelData.Props = [];
 
+// let editorVertexes = [];
+// function shapeEditor() {
+//     for (let i = 0; i < editorVertexes.length; i += 2)
+//         point(editorVertexes[i], editorVertexes[i + 1]);
 
+//     for (let i = 0; i < levelData.Terrain.length; i++){
+//         levelData.Terrain[i].display();
+//         levelData.Terrain[i].expand(.01);
+//     }
+// }
+// function keyPressed() {
+//     if (key == " ") {
+//         editorVertexes.push(mouseX);
+//         editorVertexes.push(mouseY);
+//     }
+//     if (key == "q" && editorVertexes.length > 2) {
+//         levelData.Terrain.push(new cShape(0, 0, editorVertexes));
+//         editorVertexes = [];
+//     }
 
-let editorVertexes = [];
-function shapeEditor() {
-    for (let i = 0; i < editorVertexes.length; i += 2)
-        point(editorVertexes[i], editorVertexes[i + 1]);
-
-    for (let i = 0; i < levelData.Terrain.length; i++){
-        levelData.Terrain[i].display();
-        levelData.Terrain[i].expand(.01);
-    }
-}
-function keyPressed() {
-    if (key == " ") {
-        editorVertexes.push(mouseX);
-        editorVertexes.push(mouseY);
-    }
-    if (key == "q" && editorVertexes.length > 2) {
-        levelData.Terrain.push(new cShape(0, 0, editorVertexes));
-        editorVertexes = [];
-    }
-
-    if (key == "s") {
-        saveJSON(levelData, "levelData");
-    }
-    return false;
-}
+//     if (key == "s") {
+//         saveJSON(levelData, "levelData");
+//     }
+//     return false;
+// }

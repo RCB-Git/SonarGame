@@ -1,8 +1,5 @@
 
-function preLoad() {
-    SonarOut.loadSound("Sounds/SonarOut.ogg");
 
-}
 let SonarOut;
 class Sound {
     constructor(originIN, rangeIN, soundIN) {

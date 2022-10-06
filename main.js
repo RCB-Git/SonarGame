@@ -9,7 +9,7 @@ const firebaseConfig = {
     measurementId: "G-24W046N5TX",
 };
 
-// let tGame;
+let tGame;
 var tboat;
 let deltaT;
 let lastT;
@@ -17,13 +17,15 @@ let temp;
 
 function setup() {
     createCanvas(850, 850);
-    // let tGame = new game();
+    tGame = new Game(false);
+    tGame.loadLevel(1);
+
     tboat = new Boat(100, 100);
     frameRate(50)
 }
 
 function draw() {
-    let deltaT = millis() - lastT;
+    deltaT = millis() - lastT;
     lastT = millis();
 
     background(60);
@@ -64,8 +66,8 @@ function keyPressed() {
         editorVertexes = [];
     }
 
-    // if (key == "s") {
-    //     saveJSON(levelData, "levelData");
-    // }
+    if (key == "s") {
+        saveJSON(levelData, "1");
+    }
     return false;
 }

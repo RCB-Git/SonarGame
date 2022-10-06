@@ -25,8 +25,10 @@ class Boat {
         this.pcooldown = 100;
     }
     update() {
-        this.fcooldown++;
+       
+        this.fcooldown += 1;
         this.fcooldown = constrain(this.fcooldown, 0, 100);
+       
         this.cPos = new cPoint(this.x, this.y);
 
         this.x += this.v.x;
@@ -36,10 +38,10 @@ class Boat {
         this.v.mult(this.friction)
         if (this.controlled)
             this.controlls();
-
+        this.onScreen();
     }
     display() {
-        
+        circle(this.x,this.y, millis()*.01)
         push();
         let size = 14;
         translate(this.x, this.y)
@@ -86,15 +88,35 @@ class Boat {
             resetPos = shapeIn.getReturnTo(this.cPos); 
             this.x = resetPos.x;
             this.y = resetPos.y;
+            this.v.mult(0)
             return true;
         }
         return false
     }
     ping() {
+
         if (this.fcooldown == 100) {
             this.fcooldown = 0;
             let ping = new Sound(this.pos, 100, 'SonarOut.ogg')
             ping.soundOff()
+        }
+    }
+    onScreen(){
+        if(this.x > width){
+        this.x = width-.1;
+    this.v.x = 0}
+        if (this.x < 0) {
+            this.x = .1;
+            this.v.x = 0
+        }
+
+        if (this.y > height) {
+            this.y = height-.1;
+            this.v.y = 0
+        }
+        if (this.y < 0) {
+            this.y = .1;
+            this.v.y = 0
         }
     }
 }

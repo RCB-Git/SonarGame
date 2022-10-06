@@ -3,6 +3,7 @@ class Boat {
     constructor(sx, sy) {
         this.x = sx;
         this.y = sy;
+        this.cPos = new cPoint(this.x, this.y);
         this.heading = 0;
         this.v = createVector(0, 0);
 
@@ -14,7 +15,7 @@ class Boat {
         this.maxspeed = .5;
         this.friction = .98
 
-        this.slewSpeed = .01;
+        this.slewSpeed = .006;
         this.slewfloat = 0;
         this.slewfriction = .95;
         this.maxslew = .01;
@@ -26,7 +27,8 @@ class Boat {
     update() {
         this.fcooldown++;
         this.fcooldown = constrain(this.fcooldown, 0, 100);
-        
+        this.cPos = new cPoint(this.x, this.y);
+
         this.x += this.v.x;
         this.y += this.v.y;
 
@@ -37,7 +39,7 @@ class Boat {
 
     }
     display() {
-        circle(this.x, this.y, 100)
+        
         push();
         let size = 14;
         translate(this.x, this.y)
@@ -75,10 +77,23 @@ class Boat {
         this.v.limit();
         this.v.add(add);
     }
+
+    checkCollide(shapeIn) {
+        let resetPos;
+      
+        if (shapeIn.checkP(this.cPos)) {
+           
+            resetPos = shapeIn.getReturnTo(this.cPos); 
+            this.x = resetPos.x;
+            this.y = resetPos.y;
+            return true;
+        }
+        return false
+    }
     ping() {
         if (this.fcooldown == 100) {
             this.fcooldown = 0;
-            let ping = new Sound(this.pos, 100, 'SonarOut.ogg' )
+            let ping = new Sound(this.pos, 100, 'SonarOut.ogg')
             ping.soundOff()
         }
     }

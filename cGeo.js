@@ -12,9 +12,9 @@ class cShape {
         this.max = 0;
         this.recalculate();
 
- 
-        
-        
+
+
+
         for (let i = 0; i < pts.length; i += 2) {
             this.vert.push(new cPoint(pts[i], pts[i + 1]));
             this.sides.push(
@@ -39,40 +39,62 @@ class cShape {
         for (let i = 0; i < this.sides.length; i++)
             this.sides[i].display();
 
+
     } // draws the shape
 
 
-    recalculate(){
+
+    move() {
+        for (let i = 0; i < this.vert.length; i++) { this.vert[i].add(this.vel); }
+
+        this.recalculate();
+    }
+
+    expand(by) {
+        for (let i = 0; i < this.vert.length; i++) {
+            this.vert[i].slide(this.vert[0], by);
+        }
+
+    }
+
+    recalculate() {
         //mathmatical center
-        let xSum =0;
-        let ySum =0;
-        for(let i = 0; i < this.vert.length; i++)
-        {
-            xSum+=this.vert[i].x;
-            ySum+=this.vert[i].y;
+        let xSum = 0;
+        let ySum = 0;
+
+        for (let i = 0; i < this.vert.length; i++) {
+            xSum += this.vert[i].x;
+            ySum += this.vert[i].y;
 
         }
         this.xPos = xSum / this.vert.length;
         this.yPos = ySum / this.vert.length;
 
-    }
-    move() {
-        for (let i = 0; i < this.vert.length; i++) { this.vert[i].add(this.vel); }
-    }
-    expand(by){
-        for(let i = 0; i < this.vert.length; i++){
-            this.vert[i].slide(this.vert[0],by);
+        this.sides = [];
+
+        for (let i = 0; i < this.vert.length; i++) {
+            this.sides.push(
+                new cLine(
+                    this.vert[i],
+                    this.vert[(i + 1) % this.vert.length]
+                )
+            );
+
         }
     }
 
+
     checkP(p) {
-        if (dist(p.x, p.y, this.xPos, this.yPos) <= this.max) {
+        
+    //  if (dist(p.x, p.y, this.xPos, this.yPos) <= this.max) {
             let count = 0;
             for (let i = 0; i < this.sides.length; i++) {
                 if (this.sides[i].reachTest(p)) count++;
             }
+            print(count)
             if (count % 2 == 1) return true;
-        } else return false;
+        // } else
+         return false;
     } // check if a given point is inside the bounds of this shape. if it is, return a vector
     checkS(s) {
         if (dist(s.xPos, s.yPos, this.xPos, this.yPos) <= this.max + s.max) {
@@ -100,6 +122,18 @@ class cShape {
         }
         return this.sides[min];
     }
+    getReturnTo(p) {
+       let POC = this.getClosestSide(p).PLI(p); // point of collision
+        let POR = createVector(POC.x-this.xPos,POC.y-this.yPos); //point of return
+        print(POR.mag())
+        let dupe = POR;
+        dupe.normalize().mult(.1);
+        POR.add(dupe);
+        print(POR.mag()+"after")
+
+        return(new cPoint(POC.x+ POR.x,POC.y+ POR.y))
+
+    } //boots out ,1 px along a line intersecting with the center
 
 } // custom Shape object, accepts control point X, Y and an even array of positions to put vertexes. Calls cPoint & cLine as auxilarry classes.
 
@@ -126,10 +160,10 @@ class cPoint {
         this.x += vec.x;
         this.y += vec.y;
     }
-    slide(p,by){
-       
-        let delta = createVector(this.x-p.x, this.y-p.y ).normalize().add(by);
-        line(delta.x + this.x,delta.y+ this.y,this.x,this.y);
+    slide(p, by) {
+
+        let delta = createVector(this.x - p.x, this.y - p.y).normalize().add(by);
+        line(delta.x + this.x, delta.y + this.y, this.x, this.y);
         this.x = delta.x + this.x;
         this.y = delta.y + this.y;
 

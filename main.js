@@ -1,42 +1,26 @@
-const firebaseConfig = {
-    apiKey: "AIzaSyDrX8mbRID7cW94h-4fJud2AT8tAEa3SgY",
-    authDomain: "basejson-e3d09.firebaseapp.com",
-    databaseURL: "https://basejson-e3d09-default-rtdb.firebaseio.com",
-    projectId: "basejson-e3d09",
-    storageBucket: "basejson-e3d09.appspot.com",
-    messagingSenderId: "312881790697",
-    appId: "1:312881790697:web:765f9624b524f59006fa78",
-    measurementId: "G-24W046N5TX",
-};
 
-let tGame;
-var tboat;
-let deltaT;
+let game;
+
+let deltaT; // time since last frame. Usefull for consistency 
 let lastT;
-let temp;
-
 function setup() {
     createCanvas(850, 850);
-    tGame = new Game(false);
-    tGame.loadLevel(1);
-
-    tboat = new Boat(100, 100);
-    frameRate(50)
+    game = new Game(false);
+    game.loadLevel(1);
+    
 }
 
 function draw() {
     deltaT = millis() - lastT;
     lastT = millis();
-
     background(60);
+
     stroke(255);
     strokeWeight(4);
     noFill();
 
-    this.tboat.update();
-    this.tboat.display();
-    shapeEditor()
-
+    game.update();
+   shapeEditor()
 }
 
 let levelData = {};
@@ -52,8 +36,6 @@ function shapeEditor() {
 
     for (let i = 0; i < levelData.Terrain.length; i++) {
         levelData.Terrain[i].display();
-        // levelData.Terrain[i].expand(.01);
-        tboat.checkCollide(levelData.Terrain[i]);
     }
 }
 function keyPressed() {

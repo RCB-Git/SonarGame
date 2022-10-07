@@ -4,7 +4,7 @@ class Game {
         this.activeLevel;
         this.thisSub = new Boat(100, 100);
         this.thisSub.controlled = true;
-        this.otherSubs;
+        this.otherSubs = new Boat(100,100);
         this.terrain;
     }
 
@@ -12,15 +12,18 @@ class Game {
     update() {
         this.thisSub.update();
         this.thisSub.display();
-        this.thisSub.checkCollide(); 
-        this.otherSubs.forEach(update());
+        this.thisSub.checkCollide(levelData.Terrain);
+
+      
     }
 
     loadLevel(num) {
         this.activeLevel = fetch("Levels/" +num + ".json");
         print(this.activeLevel);
     }
+
+    
     
  }
 // sweeper or ping?
-// sweeper would be a swinging arm that has a tone based on how far it gets 
+// sweeper would be a swinging arm that hasm  a tone based on how far it gets 

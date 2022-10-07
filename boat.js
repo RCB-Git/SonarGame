@@ -41,7 +41,6 @@ class Boat {
         this.onScreen();
     }
     display() {
-        circle(this.x,this.y, millis()*.01)
         push();
         let size = 14;
         translate(this.x, this.y)
@@ -80,17 +79,22 @@ class Boat {
         this.v.add(add);
     }
 
-    checkCollide(shapeIn) {
+    checkCollide(shapesIn) {
         let resetPos;
-      
-        if (shapeIn.checkP(this.cPos)) {
+      for (let index = 0; index < shapesIn.length; index++) {
+        let shape = shapesIn[index];
+
+        if (shape.checkP(this.cPos)) {
            
-            resetPos = shapeIn.getReturnTo(this.cPos); 
+            resetPos = shape.getReturnTo(this.cPos); 
             this.x = resetPos.x;
             this.y = resetPos.y;
             this.v.mult(0)
             return true;
         }
+        
+      }
+        
         return false
     }
     ping() {

@@ -17,15 +17,10 @@ class cShape {
 
         for (let i = 0; i < pts.length; i += 2) {
             this.vert.push(new cPoint(pts[i], pts[i + 1]));
-            this.sides.push(
-                new cLine(
-                    new cPoint(pts[i], pts[i + 1]),
-                    new cPoint(pts[(i + 2) % pts.length], pts[(i + 3) % pts.length])
-                )
-            );
             let d = dist(this.xPos, this.yPos, pts[i], pts[i + 1]);
             if (d > this.max) this.max = d;
         }
+        this.recalculate();
 
         if (pts.length % 2 != 0) print("Odd number of vertexes, failure likely");
     }
@@ -160,12 +155,12 @@ class cPoint {
         this.x += vec.x;
         this.y += vec.y;
     }
-    slide(p, by) {
+    slide(p, orig, by) {
 
-        let delta = createVector(this.x - p.x, this.y - p.y).normalize().add(by);
-        line(delta.x + this.x, delta.y + this.y, this.x, this.y);
-        this.x = delta.x + this.x;
-        this.y = delta.y + this.y;
+        let delta = createVector(orig.x - p.x, orig.y - p.y).normalize().add(by);
+        line(delta.x + orig.x, delta.y + orig.y, orig.x, orig.y);
+        orig.x = delta.x + orig.x;
+        orig.y = delta.y + orig.y;
 
     }
 } // Custom point object. Accepts an X and Y. Used with cLine and cShape

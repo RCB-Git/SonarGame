@@ -25,10 +25,10 @@ class Boat {
         this.pcooldown = 100;
     }
     update() {
-       
+
         this.fcooldown += 1;
         this.fcooldown = constrain(this.fcooldown, 0, 100);
-       
+
         this.cPos = new cPoint(this.x, this.y);
 
         this.x += this.v.x;
@@ -81,20 +81,20 @@ class Boat {
 
     checkCollide(shapesIn) {
         let resetPos;
-      for (let index = 0; index < shapesIn.length; index++) {
-        let shape = shapesIn[index];
+        for (let index = 0; index < shapesIn.length; index++) {
+            let shape = shapesIn[index];
+         
+            if (shape.checkP(this.cPos)) {
 
-        if (shape.checkP(this.cPos)) {
-           
-            resetPos = shape.getReturnTo(this.cPos); 
-            this.x = resetPos.x;
-            this.y = resetPos.y;
-            this.v.mult(0)
-            return true;
+                resetPos = shape.getReturnTo(this.cPos);
+                this.x = resetPos.x;
+                this.y = resetPos.y;
+                this.v.mult(0)
+                return true;
+            }
+
         }
-        
-      }
-        
+
         return false
     }
     ping() {
@@ -105,17 +105,18 @@ class Boat {
             ping.soundOff()
         }
     }
-    onScreen(){
-        if(this.x > width){
-        this.x = width-.1;
-    this.v.x = 0}
+    onScreen() {
+        if (this.x > width) {
+            this.x = width - .1;
+            this.v.x = 0
+        }
         if (this.x < 0) {
             this.x = .1;
             this.v.x = 0
         }
 
         if (this.y > height) {
-            this.y = height-.1;
+            this.y = height - .1;
             this.v.y = 0
         }
         if (this.y < 0) {

@@ -6,7 +6,7 @@ let lastT;
 function setup() {
     createCanvas(850, 850);
     game = new Game(false);
-    game.loadLevel(1);
+    game.loadlevel(1);
     
 }
 

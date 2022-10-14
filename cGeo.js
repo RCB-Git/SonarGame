@@ -80,16 +80,15 @@ class cShape {
 
 
     checkP(p) {
-        
-    //  if (dist(p.x, p.y, this.xPos, this.yPos) <= this.max) {
-            let count = 0;
-            for (let i = 0; i < this.sides.length; i++) {
-                if (this.sides[i].reachTest(p)) count++;
-            }
-            print(count)
-            if (count % 2 == 1) return true;
+
+        //  if (dist(p.x, p.y, this.xPos, this.yPos) <= this.max) {
+        let count = 0;
+        for (let i = 0; i < this.sides.length; i++) {
+            if (this.sides[i].reachTest(p)) count++;
+        }
+        if (count % 2 == 1) return true;
         // } else
-         return false;
+        return false;
     } // check if a given point is inside the bounds of this shape. if it is, return a vector
     checkS(s) {
         if (dist(s.xPos, s.yPos, this.xPos, this.yPos) <= this.max + s.max) {
@@ -118,15 +117,13 @@ class cShape {
         return this.sides[min];
     }
     getReturnTo(p) {
-       let POC = this.getClosestSide(p).PLI(p); // point of collision
-        let POR = createVector(POC.x-this.xPos,POC.y-this.yPos); //point of return
-        print(POR.mag())
+        let POC = this.getClosestSide(p).PLI(p); // point of collision
+        let POR = createVector(POC.x - this.xPos, POC.y - this.yPos); //point of return
         let dupe = POR;
         dupe.normalize().mult(.1);
         POR.add(dupe);
-        print(POR.mag()+"after")
 
-        return(new cPoint(POC.x+ POR.x,POC.y+ POR.y))
+        return (new cPoint(POC.x + POR.x, POC.y + POR.y))
 
     } //boots out ,1 px along a line intersecting with the center
 
@@ -136,6 +133,9 @@ class cPoint {
     constructor(xin, yin) {
         this.x = xin;
         this.y = yin;
+    }
+    display(){
+        point(this.x, this.y)
     }
     getClosestLine(lines) {
         let closest = 0;

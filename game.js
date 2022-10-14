@@ -1,55 +1,70 @@
 class Game {
-    constructor(state) {
-
+    constructor(state, StartLevel) {
+  
+        this.Level= {}
+        this.loadLevel(StartLevel);
+        
+    console.log((this.Level["Terrain"]))
+  
     
-        this.Terrain = [];
-        this.Props = []
+    
 
-        this.thisSub = new Boat(100, 100);
-        this.thisSub.controlled = true;
+        
+        // if (this.Level.PlayerSpawns != null) {
+        //     this.thisSub = new Boat(this.Level.PlayerSpawns[0]);
+        //     this.thisSub.controlled = true;
 
-        this.otherSubs = [new Boat(200,200), new Boat(300,300)];
-        for (let i = 0; i < this.otherSubs.length; i++) {
-            this.otherSubs[i].controlled = false;
-        }
+        //     this.otherSubs = [new Boat(this.Level.PlayerSpawns[0]), new Boat(this.Level.PlayerSpawns[0])];
+        //     for (let i = 0; i < this.otherSubs.length; i++) {
+        //         this.otherSubs[i].controlled = false;
+        //     }
+        // }
     }
 
- 
+
     update() {
-       // print(this.level)
-        // this.thisSub.update();
-        // this.thisSub.display();
-        // this.thisSub.checkCollide(this.level.Terrain);
-
-       this.debug()
-    }
-    debug(){
-        for (let i = 0; i < this.Terrain.length; i++) {
-            this.level.Terrain[i].display();
-        }
-        for (let i = 0; i < this.otherSubs.length; i++) {
-            this.otherSubs[i].display();
+        if (this.thisSub!=null) {
+            this.thisSub.update();
+            this.thisSub.display();
+            this.thisSub.checkCollide(this.Level.Terrain);
         }
 
+       // this.debug()
     }
-    loadlevel(num) {
-        let name = "levels/" + num + ".json"
-        let data;
-        fetch(name)
-            .then((response) => response.json())
-            .then((json) => print(json.Terrain));
+    debug() {
+        let debugterrain = true;
+        let debugsubs = false;
 
-            print(data);
+        if (debugterrain)
+            for (let i = 0; i < this.Level.terrain.length; i++) {
+                this.Level.terrain[i].display();
+            }
+        if (debugsubs)
+            for (let i = 0; i < this.otherSubs.length; i++) {
+                this.otherSubs[i].display();
+            }
+
     }
 
+    // JSON handler 
+    loadLevel(num) {
+        let name = 'Levels/' + num + '.json';
+  
+        this.Level = loadJSON(name)
 
-    addSub(x,y,heading){
-        this.otherSubs.push(new Boat(x,y));
-        this.otherSubs[this.otherSubs.length].heading = heading; 
+   
     }
-
     
-    
- }
+    // JSON handler 
+
+
+    addSub(x, y, heading) {
+        this.otherSubs.push(new Boat(x, y));
+        this.otherSubs[this.otherSubs.length].heading = heading;
+    }
+
+
+
+}
 // sweeper or ping?
 // sweeper would be a swinging arm that hasm  a tone based on how far it gets 

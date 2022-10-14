@@ -303,5 +303,11 @@
     }
   ],
   "Enemies": [],
-  "Props": []
+  "Props": [],
+  "PlayerSpawns": [
+    {
+      "x": 454,
+      "y": 136
+    }
+  ]
 }

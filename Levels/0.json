@@ -1,0 +1,13 @@
+{
+  "bruh":1,
+  "Players": [],
+  "Terrain": [],
+  "Enemies": [],
+  "Props": [],
+  "PlayerSpawns": [
+    {
+      "x": 100,
+      "y": 100
+    }
+  ]
+}

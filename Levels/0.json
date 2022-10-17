@@ -1,6 +1,5 @@
 {
-  "bruh":1,
-  "Players": [],
+
   "Terrain": [],
   "Enemies": [],
   "Props": [],
@@ -9,5 +8,7 @@
       "x": 100,
       "y": 100
     }
-  ]
+  ],
+  "WinZones": []
+ 
 }

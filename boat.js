@@ -103,20 +103,21 @@ class Boat {
         }
     }
     onScreen() {
-        if (this.pos.x > width) {
+        let padding = 5;
+        if (this.pos.x > width-padding) {
             this.pos.x = width - .1;
             this.v.x = 0
         }
-        if (this.pos.x < 0) {
+        if (this.pos.x < 0+padding) {
             this.pos.x = .1;
             this.v.x = 0
         }
 
-        if (this.pos.y > height) {
+        if (this.pos.y > height-padding) {
             this.pos.y = height - .1;
             this.v.y = 0
         }
-        if (this.pos.y < 0) {
+        if (this.pos.y < 0+padding) {
             this.pos.y = .1;
             this.v.y = 0
         }

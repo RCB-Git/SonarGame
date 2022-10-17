@@ -3,10 +3,23 @@ let game;
 
 let deltaT; // time since last frame. Usefull for consistency 
 let lastT;
+
+let LoadedLevels = [];
+function preload() {
+    for (let index = 0; index < 3   ; index++) {
+        LoadedLevels.push(loadJSON('Levels/' + index + '.json',));
+    }
+}
+
 function setup() {
     createCanvas(850, 850);
-    game = new Game(false,0);
     
+    for (let index = 0; index < LoadedLevels.length; index++) {
+        const element = LoadedLevels[index];
+        LoadedLevels[index] = new LEVEL(LoadedLevels[index]);
+    }
+
+    game = new Game(false, 0);
 
 }
 
@@ -39,14 +52,15 @@ function shapeEditor() {
     for (let i = 0; i < levelData.Terrain.length; i++) {
         levelData.Terrain[i].display();
     }
-    for (let i = 0; i < levelData.PlayerSpawns.length; i += 1){
-        stroke(50,255,50)
+    for (let i = 0; i < levelData.PlayerSpawns.length; i += 1) {
+        stroke(50, 255, 50)
         // print("@" + editorVertexes.PlayerSpawns[i].x + " " + editorVertexes.PlayerSpawns[i].y )
-        levelData.PlayerSpawns[i].display();}
-    
+        levelData.PlayerSpawns[i].display();
+    }
+
 }
 function keyPressed() {
-    let mouse = new cPoint(mouseX,mouseY);
+    let mouse = new cPoint(mouseX, mouseY);
     if (key == " ") {
         editorVertexes.push(mouse.x);
         editorVertexes.push(mouse.y);
@@ -56,8 +70,8 @@ function keyPressed() {
         editorVertexes = [];
     }
     if (key == "s") {
-       levelData.PlayerSpawns.push(mouse);
-       print("new playerspawn at :"+ mouse.x +" "+ mouse.y)
+        levelData.PlayerSpawns.push(mouse);
+        print("new playerspawn at :" + mouse.x + " " + mouse.y)
     }
 
 

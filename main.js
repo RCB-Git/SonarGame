@@ -6,7 +6,7 @@ let lastT;
 
 let LoadedLevels = [];
 function preload() {
-    for (let index = 0; index < 3   ; index++) {
+    for (let index = 0; index < 4   ; index++) {
         LoadedLevels.push(loadJSON('Levels/' + index + '.json',));
     }
 }
@@ -19,7 +19,7 @@ function setup() {
         LoadedLevels[index] = new LEVEL(LoadedLevels[index]);
     }
 
-    game = new Game(false, 0);
+    game = new Game(false,3);
 
 }
 

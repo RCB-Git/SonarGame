@@ -1,7 +1,7 @@
 
 class Boat {
     constructor(startpos) {
-        
+
         this.pos = startpos
         this.heading = 0;
         this.v = createVector(0, 0);
@@ -20,18 +20,16 @@ class Boat {
         //actions
         this.fcooldown = 100;
         this.pcooldown = 100;
-        
-        this.pID; 
+
+        this.pID;
     }
     update() {
 
         this.fcooldown += 1;
         this.fcooldown = constrain(this.fcooldown, 0, 100);
 
-
         this.pos.add(this.v)
 
-        this.this.pos = new cPoint(this.pos.x, this.pos.y);
         this.v.mult(this.friction)
         if (this.controlled)
             this.controlls();
@@ -44,12 +42,6 @@ class Boat {
         rotate(this.heading);
         line(0, 0, -size, size / 2);
         line(0, 0, -size, -size / 2);
-        if (false) {
-            stroke(255, 0, 0)
-            point(0, -size / 2);
-            stroke(0, 255, 0)
-            point(0, size / 2);
-        }
         pop();
     }
     controlls() {
@@ -76,14 +68,49 @@ class Boat {
         this.v.add(add);
     }
 
+    ping() {
+
+    }
+
+    collectResponses(TerrainFactors, SubFactors, otherFactors) {
+        let response = {};
+        response.T = [];
+        response.S = [];
+        response.O = []; 
+
+         let t = new cLine(new cPoint(100,100), new cPoint(mouseX,mouseY))
+         t.display();
+         t.PLD(this.pos);
+         line(50,50,t.PLD(this.pos,true) + 50, 50)
+
+        // the problem stems from the assumption that p1 is to the left of p2
+        TerrainFactors.forEach(shape => {
+         shape.sides.forEach(side => {
+            side.PLD(this.pos)
+            
+         });
+        });
+
+        SubFactors.forEach(sub => {
+        response.S.push(this.pos.dist(sub))
+        });
+
+        otherFactors.forEach(other => {
+            
+        });
+        
+    }
+    
+
+    //collision zone
     checkCollide(shapesIn) {
         let resetPos;
         for (let index = 0; index < shapesIn.length; index++) {
             let shape = shapesIn[index];
 
-            if (shape.checkP(this.cPos)) {
+            if (shape.checkP(this.pos)) {
 
-                resetPos = shape.getReturnTo(this.cPos);
+                resetPos = shape.getReturnTo(this.pos);
                 this.pos.x = resetPos.x;
                 this.pos.y = resetPos.y;
                 this.v.mult(0)
@@ -94,34 +121,28 @@ class Boat {
 
         return false
     }
-    ping() {
 
-        if (this.fcooldown == 100) {
-            this.fcooldown = 0;
-            let ping = new Sound(this.this.pos, 100, 'SonarOut.ogg')
-            ping.soundOff()
-        }
-    }
     onScreen() {
         let padding = 5;
-        if (this.pos.x > width-padding) {
-            this.pos.x = width - .1;
+        if (this.pos.x > width - padding) {
+            this.pos.x = width - padding - .1;
             this.v.x = 0
         }
-        if (this.pos.x < 0+padding) {
-            this.pos.x = .1;
+        if (this.pos.x < 0 + padding) {
+            this.pos.x = .1 + padding;
             this.v.x = 0
         }
 
-        if (this.pos.y > height-padding) {
-            this.pos.y = height - .1;
+        if (this.pos.y > height - padding) {
+            this.pos.y = height -padding - .1;
             this.v.y = 0
         }
-        if (this.pos.y < 0+padding) {
-            this.pos.y = .1;
+        if (this.pos.y < 0 + padding) {
+            this.pos.y = .1 + padding;
             this.v.y = 0
         }
     }
+
 }
 
 

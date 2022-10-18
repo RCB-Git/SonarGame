@@ -964,7 +964,7 @@
     }
   ],
   "Enemies": [],
-  "PlayerSpawn": [
+  "PlayerSpawns": [
     {
       "x": 463,
       "y": 180

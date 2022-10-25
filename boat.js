@@ -1,4 +1,3 @@
-
 class Boat {
     constructor(startpos) {
 
@@ -44,6 +43,11 @@ class Boat {
         line(0, 0, -size, -size / 2);
         pop();
     }
+
+    ping() {
+
+
+    }
     controlls() {
 
         let add = createVector(0, 0);
@@ -68,58 +72,46 @@ class Boat {
         this.v.add(add);
     }
 
-    ping() {
-
-    }
-
     collectResponses(TerrainFactors, SubFactors, otherFactors) {
         let response = {};
         response.T = [];
         response.S = [];
-        response.O = []; 
-
-         let t = new cLine(new cPoint(100,100), new cPoint(mouseX,mouseY))
-         t.display();
-         t.PLD(this.pos);
-         line(50,50,t.PLD(this.pos,true) + 50, 50)
-
-        // the problem stems from the assumption that p1 is to the left of p2
+        response.O = [];
+        
         TerrainFactors.forEach(shape => {
-         shape.sides.forEach(side => {
-            side.PLD(this.pos)
-            
-         });
+           let side = shape.getClosestSide(this.pos);
+            // let cp = side.PLD(this.pos);
+            // strokeWeight(1);
+            // line(this.pos.x, this.pos.y, cp.x, cp.y);
+            // response.T.push(this.bearingTo(cp));
         });
 
         SubFactors.forEach(sub => {
-        response.S.push(this.pos.dist(sub))
+            response.S.push(this.pos.dist(sub))
         });
 
         otherFactors.forEach(other => {
-            
+
         });
-        
+
     }
-    
+
+    bearingTo(p) {
+        let vec = createVector(this.pos.x - p.x, this.pos.y - p.y)
+        return vec.angleBetween(p5.Vector.fromAngle(this.heading));
+    }
 
     //collision zone
     checkCollide(shapesIn) {
         let resetPos;
-        for (let index = 0; index < shapesIn.length; index++) {
-            let shape = shapesIn[index];
-
+        let collided = false
+        shapesIn.forEach(shape => {
             if (shape.checkP(this.pos)) {
-
-                resetPos = shape.getReturnTo(this.pos);
-                this.pos.x = resetPos.x;
-                this.pos.y = resetPos.y;
-                this.v.mult(0)
-                return true;
+                this.pos = shape.getReturnTo(this.pos);
+                collided = true;
             }
-
-        }
-
-        return false
+        });
+        return collided;
     }
 
     onScreen() {
@@ -134,7 +126,7 @@ class Boat {
         }
 
         if (this.pos.y > height - padding) {
-            this.pos.y = height -padding - .1;
+            this.pos.y = height - padding - .1;
             this.v.y = 0
         }
         if (this.pos.y < 0 + padding) {
@@ -144,5 +136,4 @@ class Boat {
     }
 
 }
-
 

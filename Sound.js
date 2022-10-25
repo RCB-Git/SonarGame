@@ -1,5 +1,3 @@
-
-
 let SonarOut;
 class Sound {
     constructor(originIN, rangeIN, soundIN) {
@@ -8,9 +6,6 @@ class Sound {
         this.sound = new p5.SoundFile('Sounds/SonarOut.ogg');
         let grain = 0;
         let pts = [];
-
-        this.hitbox = new cShape(this.origin.x, this.origin.y, [])
-
     }
 
     soundOff() {

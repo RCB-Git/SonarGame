@@ -104,25 +104,24 @@ class cShape {
         let min = Infinity;
         let ref;
         this.sides.forEach(side => {
-            let d = side.PLD(p,true);
+            let d = side.PLD(p, true);
             if (d < min) {
                 min = d;
                 ref = side
             }
         });
-        return ref; 
+        
+        return ref;
     }
 
     getReturnTo(p) {
         let POC = this.getClosestSide(p).PLD(p); // point of collision
-        let POR = createVector(POC.x -p.x, POC.y - p.y ).mult(2); //point of return
-        return (new cPoint(POR.x + p.x, POR.y+p.y))
-        
+        let POR = createVector(POC.x - p.x, POC.y - p.y).mult(2); //point of return
+        return (new cPoint(POR.x + p.x, POR.y + p.y))
+
     } //boots out based on how far into the shape you are
 
 } // custom Shape object, accepts control point X, Y and an even array of positions to put vertexes. Calls cPoint & cLine as auxilarry classes.
-
-
 
 class cPoint {
     constructor(xin, yin) {
@@ -180,32 +179,32 @@ class cLine {
 
 
     //IMPORTANT SHIT HERE 
-    PLD( p, qdistance) {
-        
-        let out = new cPoint(0,0);
-        if (this.p1.x == this.p2.x) (out = new cPoint(this.p1.x, p.y))
-        else 
-        if (this.p1.y == this.p2.y) (out = new cPoint(p.x, this.p1.y))
+    PLD(p, qdistance) {
 
-        else {
-            this.slope = (this.p1.y - this.p2.y) / (this.p1.x - this.p2.x); // resets slope just in case. can be omitted if trimming
-            let invs = -1 / this.slope;
-            let x = (this.slope * this.p1.x - invs * p.x + p.y - this.p1.y) / (this.slope - invs);
-            let y = invs * (x - p.x) + p.y
-            out = new cPoint(x, y);
-        }
+        let out = new cPoint(0, 0);
+        if (this.p1.x == this.p2.x) (out = new cPoint(this.p1.x, p.y))
+        else
+            if (this.p1.y == this.p2.y) (out = new cPoint(p.x, this.p1.y))
+
+            else {
+                this.slope = (this.p1.y - this.p2.y) / (this.p1.x - this.p2.x); // resets slope just in case. can be omitted if trimming
+                let invs = -1 / this.slope;
+                let x = (this.slope * this.p1.x - invs * p.x + p.y - this.p1.y) / (this.slope - invs);
+                let y = invs * (x - p.x) + p.y
+                out = new cPoint(x, y);
+            }
 
         let xbound = (out.x >= this.p1.x && out.x <= this.p2.x) || (out.x >= this.p2.x && out.x <= this.p1.x)
         let ybound = (out.y >= this.p1.y && out.y <= this.p2.y) || (out.y >= this.p2.y && out.y <= this.p1.y)
 
-        
+
         if (!xbound && !ybound) {
             if (p.dist(this.p1) > p.dist(this.p2))
                 out = this.p2;
             else out = this.p1;
         }
 
-        //line(p.x, p.y, out.x, out.y)
+        // line(p.x, p.y, out.x, out.y)
         if (qdistance != null) {
             return p.dist(out)
         }

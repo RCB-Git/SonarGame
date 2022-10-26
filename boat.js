@@ -1,10 +1,15 @@
 class Boat {
-    constructor(startpos) {
+    constructor(startpos, controlled, startLevel) {
 
+        this.Level = startLevel
+
+        this.health = 3;
         this.pos = startpos
         this.heading = 0;
         this.v = createVector(0, 0);
-        this.controlled = true;
+        if(controlled != null)
+        this.controlled = controlled;
+        
 
         //movement controlls
         this.accel = .01;
@@ -17,23 +22,27 @@ class Boat {
         this.maxslew = .01;
 
         //actions
-        this.fcooldown = 100;
-        this.pcooldown = 100;
 
+        this.fcooldown = 100;
+        
         this.pID;
     }
+
     update() {
 
         this.fcooldown += 1;
         this.fcooldown = constrain(this.fcooldown, 0, 100);
 
         this.pos.add(this.v)
-
         this.v.mult(this.friction)
+
         if (this.controlled)
             this.controlls();
-        this.onScreen();
+        this.onScreen(30);
+
+        print(this.bearingTo(new cPoint(mouseX,mouseY)));
     }
+
     display() {
         push();
         let size = 14;
@@ -44,32 +53,11 @@ class Boat {
         pop();
     }
 
-    ping() {
-
+    fire() {
 
     }
-    controlls() {
+    ping() {
 
-        let add = createVector(0, 0);
-
-        if (keyIsDown(87))// w
-            add.add(p5.Vector.fromAngle(this.heading, this.accel))
-        if (keyIsDown(83))//s
-            add.add(p5.Vector.fromAngle(this.heading, -this.accel * .25))
-        if (keyIsDown(65))//a
-            this.slewfloat -= this.slewSpeed;
-        if (keyIsDown(68))//d
-            this.slewfloat += this.slewSpeed;
-        if (keyIsDown(32))//spacebar
-            this.ping()
-
-        //Fix values
-
-        this.slewfloat = constrain(this.slewfloat, -this.maxslew, this.maxslew) * this.slewfriction;
-        this.heading += this.slewfloat;
-
-        this.v.limit();
-        this.v.add(add);
     }
 
     collectResponses(TerrainFactors, SubFactors, otherFactors) {
@@ -77,28 +65,61 @@ class Boat {
         response.T = [];
         response.S = [];
         response.O = [];
-        
+        circle(this.pos.x, this.pos.y, 400)
         TerrainFactors.forEach(shape => {
-           let side = shape.getClosestSide(this.pos);
-            // let cp = side.PLD(this.pos);
-            // strokeWeight(1);
-            // line(this.pos.x, this.pos.y, cp.x, cp.y);
-            // response.T.push(this.bearingTo(cp));
+            strokeWeight(1);
+            let side = shape.getClosestSide(this.pos);
+            let cp = side.PLD(this.pos);
+            line(this.pos.x,this.pos.y, cp.x, cp.y)
+
+            response.T.push(this.bearingTo(cp));
         });
 
         SubFactors.forEach(sub => {
-            response.S.push(this.pos.dist(sub))
+            response.S.push(this.bearingTo(sub))
         });
 
         otherFactors.forEach(other => {
-
+            response.O.push(this.bearingTo(other.pos));
         });
+    }
+
+    controlls() {
+        let acceladj = this.accel *deltaT; 
+        let slewadg = this.slewSpeed *deltaT; 
+        let add = createVector(0, 0);
+
+        if (keyIsDown(87))// w
+            add.add(p5.Vector.fromAngle(this.heading, acceladj))
+        if (keyIsDown(83))//s
+            add.add(p5.Vector.fromAngle(this.heading, -acceladj * .25))
+        if (keyIsDown(65))//a
+            this.slewfloat -= slewadj;
+        if (keyIsDown(68))//d
+            this.slewfloat += slewadj;
+        if (keyIsDown(32))//spacebar
+            this.ping()
+        if (keyIsDown(70))//spacebar
+            this.fire()
+        if (this.v.mag() < .001)
+            this.v.mult(0)
+        //Fix values
+
+        this.slewfloat = constrain(this.slewfloat, -this.maxslew, this.maxslew) * this.slewfriction;
+        this.heading += this.slewfloat;
+
+        // this.v.limit();
+        this.v.add(add);
 
     }
 
+    
+
     bearingTo(p) {
-        let vec = createVector(this.pos.x - p.x, this.pos.y - p.y)
-        return vec.angleBetween(p5.Vector.fromAngle(this.heading));
+        let mh = p5.Vector.fromAngle(this.heading).mult(100)
+        let th = createVector(p.x - this.pos.x, p.y - this.pos.y)
+        let ang = mh.angleBetween(th);
+        return ang;
     }
 
     //collision zone
@@ -113,9 +134,18 @@ class Boat {
         });
         return collided;
     }
+    checkTorpedoes(torpedoesIn) {
+        torpedoesIn.forEach(torpedo => {
+            if (this.pos.dist(torpedo.pos) <= torpedo.kz && torpedo.armed)
+                health--;
+        });
+    }
 
-    onScreen() {
-        let padding = 5;
+    onScreen(padding) {
+        line(padding, padding, padding, height - padding);
+        line(padding, height - padding, width - padding, height - padding)
+        line(width - padding, height - padding, width - padding, padding)
+        line(width - padding, padding, padding, padding)
         if (this.pos.x > width - padding) {
             this.pos.x = width - padding - .1;
             this.v.x = 0

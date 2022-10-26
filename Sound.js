@@ -1,16 +1,22 @@
-let SonarOut;
+let LoadedSounds = [];
+let speedofsound = 100; // 
 class Sound {
-    constructor(originIN, rangeIN, soundIN) {
-        this.origin = originIN;
-        this.range = rangeIN;
-        this.sound = new p5.SoundFile('Sounds/SonarOut.ogg');
-        let grain = 0;
-        let pts = [];
-    }
+    constructor(headingIN, rangeIN, soundIN) {
+       this.heading = headingIN;
+       this.range = rangeIN;
+       this.soundIN = new P5.Oscillator("Square")
+       this.maxDistance = 400
 
-    soundOff() {
-        if (this.sound.isLoaded())
-            this.sound.play();
-        else print("not loaded")
+       this.vol = this.range/this.maxDistance;
+       delay = 
+       this.pan = sin(this.heading)
+       this.pitch = cos(this.heading)
+       this.go();
+    }
+    go(){ 
+        
+
+    
+
     }
 }

@@ -5,27 +5,30 @@ let deltaT; // time since last frame. Usefull for consistency
 let lastT;
 
 let LoadedLevels = [];
+
 function preload() {
-    for (let index = 0; index < 5   ; index++) {
+    for (let index = 0; index <= 6; index++) {
         LoadedLevels.push(loadJSON('Levels/' + index + '.json',));
     }
 }
 
 function setup() {
     createCanvas(850, 850);
-    
+
     for (let index = 0; index < LoadedLevels.length; index++) {
         const element = LoadedLevels[index];
         LoadedLevels[index] = new LEVEL(LoadedLevels[index]);
     }
 
-    game = new Game(false,4);
+    game = new Game(false, 5);
 
 }
 
 function draw() {
     deltaT = millis() - lastT;
     lastT = millis();
+    deltaT/=1000;
+
     background(60);
 
     stroke(255);

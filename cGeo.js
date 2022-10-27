@@ -1,9 +1,7 @@
 
 class cShape {
     constructor(x, y, pts) {
-
         this.vert = [];
-
         if (pts.length % 2 != 0) print("Odd number of vertexes, failure likely");
         for (let i = 0; i < pts.length; i += 2) {
             this.vert.push(new cPoint(pts[i], pts[i + 1]))
@@ -40,7 +38,6 @@ class cShape {
 
         this.recalculate();
     }
-
     recalculate() {
         let xSum = 0;
         let ySum = 0;
@@ -66,16 +63,15 @@ class cShape {
         }
         this.max = -Infinity;
         this.vert.forEach(vertex => {
-            let distance = this.pos.dist(vertex)
+            let distance = this.pos.distanceTo(vertex)
             if (distance > this.max)
                 this.max = distance;
         });
     }
 
-
     checkP(p) {
 
-        if (p.dist(this.pos) <= this.max) {
+        if (p.distanceTo(this.pos) <= this.max) {
             let count = 0;
             for (let i = 0; i < this.sides.length; i++) {
                 if (this.sides[i].reachTest(p)) count++;
@@ -104,23 +100,26 @@ class cShape {
         let min = Infinity;
         let ref;
         this.sides.forEach(side => {
-            let d = side.PLD(p, true);
+            let d = side.distanceTo(p, true);
             if (d < min) {
                 min = d;
                 ref = side
             }
         });
-        
+
         return ref;
     }
 
     getReturnTo(p) {
-        let POC = this.getClosestSide(p).PLD(p); // point of collision
+        let POC = this.getClosestSide(p).distanceTo(p); // point of collision
         let POR = createVector(POC.x - p.x, POC.y - p.y).mult(2); //point of return
         return (new cPoint(POR.x + p.x, POR.y + p.y))
 
     } //boots out based on how far into the shape you are
 
+    distanceTo(p) {
+        return this.getClosestSide(p).distanceTo(p)
+    }
 } // custom Shape object, accepts control point X, Y and an even array of positions to put vertexes. Calls cPoint & cLine as auxilarry classes.
 
 class cPoint {
@@ -132,17 +131,19 @@ class cPoint {
         point(this.x, this.y)
     }
 
-    dist(p) {
+    distanceTo(p) {
         return dist(p.x, p.y, this.x, this.y)
-    }
-    cVertex() {
-        vertex(this.x, this.y);
-    } // Adds a vertex at "this" point
+    }//distance to this point
+
     add(vec) {
         this.x += vec.x;
         this.y += vec.y;
-    }
-    verif() { print("Sucess") }
+    } //adds a vector
+
+    cVertex() {
+        vertex(this.x, this.y);
+    } // Adds a vertex at "this" point
+    verif(){console.log("Verif = true")}
 } // Custom point object. Accepts an X and Y. Used with cLine and cShape
 
 class cLine {
@@ -158,7 +159,6 @@ class cLine {
     } // shows the line;
 
     reachTest(p) {
-
         if (
             ((p.x > this.p1.x && p.x <= this.p2.x) ||
                 (p.x <= this.p1.x && p.x > this.p2.x)) &&
@@ -168,46 +168,33 @@ class cLine {
         } else return false;
     } // tests if a given point drops down and touches return true;
 
-
-
-    // PLI(p) {
-    //     let out = this.slope * (p.x - this.p1.x) + this.p1.y;
-    //     if (out == Infinity || out == -Infinity)
-    //         return new cPoint(this.p1.x, p.y);
-    //     return new cPoint(p.x, out);
-    // }//finds vertical line intersect
-
-
     //IMPORTANT SHIT HERE 
-    PLD(p, qdistance) {
+    distanceTo(p, qdistance) {
 
-        let out = new cPoint(0, 0);
+        let out;
+
+        this.slope = (this.p1.y - this.p2.y) / (this.p1.x - this.p2.x); // resets slope just in case. can be omitted if trimming
+        let invs = -1 / this.slope;
+        let x = (this.slope * this.p1.x - invs * p.x + p.y - this.p1.y) / (this.slope - invs);
+        let y = invs * (x - p.x) + p.y
+        out = new cPoint(x, y);
+
         if (this.p1.x == this.p2.x) (out = new cPoint(this.p1.x, p.y))
-        else
-            if (this.p1.y == this.p2.y) (out = new cPoint(p.x, this.p1.y))
 
-            else {
-                this.slope = (this.p1.y - this.p2.y) / (this.p1.x - this.p2.x); // resets slope just in case. can be omitted if trimming
-                let invs = -1 / this.slope;
-                let x = (this.slope * this.p1.x - invs * p.x + p.y - this.p1.y) / (this.slope - invs);
-                let y = invs * (x - p.x) + p.y
-                out = new cPoint(x, y);
-            }
+        if (this.p1.y == this.p2.y) (out = new cPoint(p.x, this.p1.y))
 
         let xbound = (out.x >= this.p1.x && out.x <= this.p2.x) || (out.x >= this.p2.x && out.x <= this.p1.x)
         let ybound = (out.y >= this.p1.y && out.y <= this.p2.y) || (out.y >= this.p2.y && out.y <= this.p1.y)
 
-
-        if (!xbound && !ybound) {
-            if (p.dist(this.p1) > p.dist(this.p2))
+        if (!xbound || !ybound)
+            if (p.distanceTo(this.p1) > p.distanceTo(this.p2))
                 out = this.p2;
             else out = this.p1;
-        }
+        if (qdistance != null)
+            return p.distanceTo(out)
 
-        // line(p.x, p.y, out.x, out.y)
-        if (qdistance != null) {
-            return p.dist(out)
-        }
         return out;
     }
+    //collison methods 
+
 } // accepts two cPoint objects, from and to

@@ -7,47 +7,54 @@ class Boat {
         this.pos = startpos
         this.heading = 0;
         this.v = createVector(0, 0);
-
+        this.padding = 30;
         if (controlled != null)
             this.controlled = controlled;
 
 
         //movement controlls
-        this.accel = .01;
-        this.maxspeed = .5;
-        this.friction = .98
+        {
+            this.accel = .01;
+            this.maxspeed = .5;
+            this.friction = .98
 
-        this.slewSpeed = .006;
-        this.slewfloat = 0;
-        this.slewfriction = .95;
-        this.maxslew = .01;
+            this.slewSpeed = .006;
+            this.slewfloat = 0;
+            this.slewfriction = .95;
+            this.maxslew = .01;
+        }
 
         //actions
 
         this.fcooldown = 100;
 
-        this.sweeperAng = 0 
-        this.rangeTable = []
+        this.sweeperAng = 0
+        this.BRG = []
 
         this.pcooldown = 100;
         this.pID;
     }
 
     update() {
+        //cooldowns
+        {
+            this.fcooldown -= 1;
+            this.fcooldown = constrain(this.fcooldown, 0, 100);
 
-        this.fcooldown -= 1;
-        this.fcooldown = constrain(this.fcooldown, 0, 100);
+            this.pcooldown -= 1;
+            this.pcooldown = constrain(this.pcooldown, 0, 100);
+        }
 
-        this.pcooldown -= 1;
-        this.pcooldown = constrain(this.pcooldown, 0, 100);
 
         this.pos.add(this.v)
         this.v.mult(this.friction)
 
-        if (this.controlled)
+        if (this.controlled) {
             this.controlls();
-        this.onScreen(30);
-        console.log (this.raycast(this.bearingTo(mouse) + this.heading, 200))
+            this.onScreen(30);
+
+            this.contactGraph();
+        }
     }
 
     display() {
@@ -67,6 +74,7 @@ class Boat {
         }
         console.log("fire is on cooldown for " + this.fcooldown)
     }
+
     ping() {
         if (this.pcooldown <= 0) {
             this.pcooldown = 100;
@@ -74,6 +82,24 @@ class Boat {
         }
         console.log("Ping is on cooldown for " + this.pcooldown)
     }
+    contactGraph() {
+        //sweep
+        this.sweeperAng +=5;
+        
+        this.BRG[(this.sweeperAng) % 360] = this.raycast(radians(this.sweeperAng), 200);
+    
+       
+        for (let index = 0; index < this.BRG.length; index++) {
+            const element = this.BRG[index];
+            point(index+ this.padding, height - element - this.padding)
+            
+        }
+
+        // for (let i = 0; i < 360; i++) {
+        //     point(i + this.padding, height - this.BRG[i] - this.padding)
+        //     // point(this.BRG[i], i)
+        // }
+}
 
     collectResponses(TerrainFactors, SubFactors, otherFactors) {
         let response = {};
@@ -99,21 +125,20 @@ class Boat {
         });
     }
 
-    raycast(angle, range){
+    raycast(angle, range) {
         let vec = p5.Vector.fromAngle(angle)
         vec.mult(range);
-       
-        for(let i = .5; i < range; i++)
-        {   
+
+        for (let i = .5; i < range; i++) {
             vec.setMag(i);
-             point(this.pos.x + vec.x, this.pos.y + vec.y)
+            point(this.pos.x + vec.x, this.pos.y + vec.y)
             let active = new cPoint(this.pos.x + vec.x, this.pos.y + vec.y)
 
             for (let s = 0; s < this.Level.Terrain.length; s++) {
                 const shape = this.Level.Terrain[s];
-               // console.log(shape)
-                if(shape.checkP(active) || this.onScreen(30, active))
-                return active.distanceTo(this.pos);
+                // console.log(shape)
+                if (shape.checkP(active) || this.onScreen(30, active))
+                    return active.distanceTo(this.pos);
             }
         }
     }
@@ -122,7 +147,7 @@ class Boat {
         let acceladj = this.accel // * deltaT;
         let slewadj = this.slewSpeed // * deltaT;
         let add = createVector(0, 0);
-       
+
         if (keyIsDown(87))// w
             add.add(p5.Vector.fromAngle(this.heading, acceladj))
         if (keyIsDown(83))//s
@@ -175,44 +200,43 @@ class Boat {
 
     onScreen(padding, pt) {
 
-        if(pt == null){
-        line(padding, padding, padding, height - padding);
-        line(padding, height - padding, width - padding, height - padding)
-        line(width - padding, height - padding, width - padding, padding)
-        line(width - padding, padding, padding, padding)
-        if (this.pos.x > width - padding) {
-            this.pos.x = width - padding - .1;
-            this.v.x = 0
-        }
-        if (this.pos.x < 0 + padding) {
-            this.pos.x = .1 + padding;
-            this.v.x = 0
-        }
+        if (pt == null) {
+            line(padding, padding, padding, height - padding);
+            line(padding, height - padding, width - padding, height - padding)
+            line(width - padding, height - padding, width - padding, padding)
+            line(width - padding, padding, padding, padding)
+            if (this.pos.x > width - padding) {
+                this.pos.x = width - padding - .1;
+                this.v.x = 0
+            }
+            if (this.pos.x < 0 + padding) {
+                this.pos.x = .1 + padding;
+                this.v.x = 0
+            }
 
-        if (this.pos.y > height - padding) {
-            this.pos.y = height - padding - .1;
-            this.v.y = 0
+            if (this.pos.y > height - padding) {
+                this.pos.y = height - padding - .1;
+                this.v.y = 0
+            }
+            if (this.pos.y < 0 + padding) {
+                this.pos.y = .1 + padding;
+                this.v.y = 0
+            }
         }
-        if (this.pos.y < 0 + padding) {
-            this.pos.y = .1 + padding;
-            this.v.y = 0
-        }
-    }
-    else 
-    {
-            if (pt.x > width - padding || 
-                pt.x < 0 + padding || 
-                pt.y > height-padding || 
+        else {
+            if (pt.x > width - padding ||
+                pt.x < 0 + padding ||
+                pt.y > height - padding ||
                 pt.y < 0 + padding)
-            return true 
-            else 
-            return false
+                return true
+            else
+                return false
 
 
 
+        }
     }
-}
-    
+
 
 }
 

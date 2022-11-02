@@ -15,7 +15,7 @@ class Game {
     }
 
     update() {
-        this.Level.debug();
+       // this.Level.debug();
 
         this.Subs.forEach(element => {
             element.display();
@@ -38,6 +38,7 @@ class Game {
             // sub.pos = 
             let spawn = (this.Level.PlayerSpawns[0]);
             sub.pos = new cPoint(spawn.x, spawn.y)
+            sub.Level =  this.Level;
         });
     }
     addSub(pos, iscont) {

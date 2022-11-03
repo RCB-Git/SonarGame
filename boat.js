@@ -8,6 +8,11 @@ class Boat {
         this.heading = 0;
         this.v = createVector(0, 0);
         this.padding = 30;
+        this.sonarCoef = 30;
+        
+        this.sweeperAngle =0; 
+        this.BRG = [];
+
         if (controlled != null)
             this.controlled = controlled;
 
@@ -28,9 +33,6 @@ class Boat {
 
         this.fcooldown = 100;
 
-        this.sweeperAng = 0
-        this.BRG = []
-
         this.pcooldown = 100;
         this.pID;
     }
@@ -45,6 +47,7 @@ class Boat {
             this.pcooldown = constrain(this.pcooldown, 0, 100);
         }
 
+        // circle(this.pos.x, this.pos.y, this.sonarCoef)
 
         this.pos.add(this.v)
         this.v.mult(this.friction)
@@ -52,8 +55,7 @@ class Boat {
         if (this.controlled) {
             this.controlls();
             this.onScreen(30);
-
-            this.contactGraph();
+           // this.contactGraph();
         }
     }
 
@@ -82,66 +84,8 @@ class Boat {
         }
         console.log("Ping is on cooldown for " + this.pcooldown)
     }
-    contactGraph() {
-        //sweep
-        this.sweeperAng +=5;
-        
-        this.BRG[(this.sweeperAng) % 360] = this.raycast(radians(this.sweeperAng), 200);
     
-       
-        for (let index = 0; index < this.BRG.length; index++) {
-            const element = this.BRG[index];
-            point(index+ this.padding, height - element - this.padding)
-            
-        }
-
-        // for (let i = 0; i < 360; i++) {
-        //     point(i + this.padding, height - this.BRG[i] - this.padding)
-        //     // point(this.BRG[i], i)
-        // }
-}
-
-    collectResponses(TerrainFactors, SubFactors, otherFactors) {
-        let response = {};
-        response.T = [];
-        response.S = [];
-        response.O = [];
-        // circle(this.pos.x, this.pos.y, 400)
-        TerrainFactors.forEach(shape => {
-            strokeWeight(1);
-            let side = shape.getClosestSide(this.pos);
-            let cp = side.distanceTo(this.pos);
-            line(this.pos.x, this.pos.y, cp.x, cp.y)
-
-            response.T.push(this.bearingTo(cp));
-        });
-
-        SubFactors.forEach(sub => {
-            response.S.push(this.bearingTo(sub))
-        });
-
-        otherFactors.forEach(other => {
-            response.O.push(this.bearingTo(other.pos));
-        });
-    }
-
-    raycast(angle, range) {
-        let vec = p5.Vector.fromAngle(angle)
-        vec.mult(range);
-
-        for (let i = .5; i < range; i++) {
-            vec.setMag(i);
-            point(this.pos.x + vec.x, this.pos.y + vec.y)
-            let active = new cPoint(this.pos.x + vec.x, this.pos.y + vec.y)
-
-            for (let s = 0; s < this.Level.Terrain.length; s++) {
-                const shape = this.Level.Terrain[s];
-                // console.log(shape)
-                if (shape.checkP(active) || this.onScreen(30, active))
-                    return active.distanceTo(this.pos);
-            }
-        }
-    }
+    
 
     controlls() {
         let acceladj = this.accel // * deltaT;

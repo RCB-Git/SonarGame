@@ -22,7 +22,7 @@ class cShape {
 
     display() {
         // point(this.pos.x, this.pos.y); // show center
-        // circle(this.pos.x, this.pos.y, this.max * 2); // show C-range
+        //circle(this.pos.x, this.pos.y, this.max * 2); // show C-range
 
 
         this.move();
@@ -70,31 +70,32 @@ class cShape {
     }
 
     checkP(p) {
-
-        if (p.distanceTo(this.pos) <= this.max) {
+    //    console.log(p)
+        if (p.distanceTo(this.pos) < this.max) {
             let count = 0;
             for (let i = 0; i < this.sides.length; i++) {
                 if (this.sides[i].reachTest(p)) count++;
             }
             if (count % 2 == 1)
                 return true;
-        } else
+                else return false;
+         } else
             return false;
     } // check if a given point is inside the bounds of this shape. return bool
 
-    checkS(s) {
-        if (dist(s.xPos, s.yPos, this.pos.x, this.pos.y) <= this.max + s.max) {
-            for (let i = 0; i < s.vert.length; i++)
-                if (this.checkP(s.vert[i])) {
-                    return true;
-                }
-            for (let i = 0; i < this.vert.length; i++)
-                if (s.checkP(this.vert[i])) {
-                    return true;
-                }
-        }
-        return false;
-    } // checks to see if a shape is touching T/F
+    // checkS(s) {
+    //     if (dist(s.xPos, s.yPos, this.pos.x, this.pos.y) <= this.max + s.max) {
+    //         for (let i = 0; i < s.vert.length; i++)
+    //             if (this.checkP(s.vert[i])) {
+    //                 return true;
+    //             }
+    //         for (let i = 0; i < this.vert.length; i++)
+    //             if (s.checkP(this.vert[i])) {
+    //                 return true;
+    //             }
+    //     }
+    //     return false;
+    // } // checks to see if a shape is touching T/F
 
     getClosestSide(p) {
         let min = Infinity;
@@ -186,10 +187,14 @@ class cLine {
         let xbound = (out.x >= this.p1.x && out.x <= this.p2.x) || (out.x >= this.p2.x && out.x <= this.p1.x)
         let ybound = (out.y >= this.p1.y && out.y <= this.p2.y) || (out.y >= this.p2.y && out.y <= this.p1.y)
 
+
+
         if (!xbound || !ybound)
             if (p.distanceTo(this.p1) > p.distanceTo(this.p2))
                 out = this.p2;
             else out = this.p1;
+
+           // line(p.x,p.y, out.x, out.y)
         if (qdistance != null)
             return p.distanceTo(out)
 

@@ -19,9 +19,9 @@ class Boat {
 
         //movement controlls
         {
-            this.accel = .01;
-            this.maxspeed = .5;
-            this.friction = .98
+            this.accel = .01 + swiftness;
+            
+            this.friction = .98  *ice
 
             this.slewSpeed = .006;
             this.slewfloat = 0;
@@ -55,7 +55,6 @@ class Boat {
         if (this.controlled) {
             this.controlls();
             this.onScreen(30);
-           // this.contactGraph();
         }
     }
 
@@ -111,7 +110,6 @@ class Boat {
         this.slewfloat = constrain(this.slewfloat, -this.maxslew, this.maxslew) * this.slewfriction;
         this.heading += this.slewfloat;
 
-        // this.v.limit();
         this.v.add(add);
 
     }
@@ -143,12 +141,8 @@ class Boat {
     }
 
     onScreen(padding, pt) {
-
+        let sonarRange = 200;
         if (pt == null) {
-            line(padding, padding, padding, height - padding);
-            line(padding, height - padding, width - padding, height - padding)
-            line(width - padding, height - padding, width - padding, padding)
-            line(width - padding, padding, padding, padding)
             if (this.pos.x > width - padding) {
                 this.pos.x = width - padding - .1;
                 this.v.x = 0
@@ -166,21 +160,21 @@ class Boat {
                 this.pos.y = .1 + padding;
                 this.v.y = 0
             }
+            
         }
         else {
+            let monitor = (pt.x > padding && pt.x < padding + 360) && (pt.y > height - padding - sonarRange && pt.y < height-padding);
             if (pt.x > width - padding ||
                 pt.x < 0 + padding ||
                 pt.y > height - padding ||
-                pt.y < 0 + padding)
+                pt.y < 0 + padding || monitor)
                 return true
             else
                 return false
-
-
-
         }
     }
 
+   
 
 }
 

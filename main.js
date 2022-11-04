@@ -6,6 +6,8 @@ let lastT;
 
 let LoadedLevels = [];
 let mouse;
+
+
 function preload() {
     for (let index = 0; index <= 6; index++) {
         LoadedLevels.push(loadJSON('Levels/' + index + '.json',));
@@ -15,7 +17,7 @@ function preload() {
 
 function setup() {
     createCanvas(850, 850);
-
+    background(60)
     for (let index = 0; index < LoadedLevels.length; index++) {
         const element = LoadedLevels[index];
         LoadedLevels[index] = new LEVEL(LoadedLevels[index]);
@@ -31,13 +33,13 @@ function draw() {
     lastT = millis();
     deltaT/=1000;
 
-    background(60);
+    background(60,15);
     
    cFormat(0)
 
     game.update();
     // cFilter();
-   // shapeEditor();
+    //shapeEditor();
 
 
 }
@@ -58,20 +60,21 @@ if (c == 1){
 function cFilter(){
     push()
     noStroke();
-    fill(0,255,0,25);
+    fill(0,200,0,0); // tint
     rect(0,0, width, height)
 pop();
-for(let i = 0; i < height; i +=3){
+let iter = 6
+for(let i = 0; i < height; i +=iter){
     push();
-    strokeWeight(1);
-    stroke(60,100);
+    strokeWeight(2);
+    stroke(60,255);
     line(0,i, width, i);
     pop();
 }
 if(true)
-    for (let i = 0; i < width; i += 3) {
+    for (let i = 0; i < width; i += iter) {
         push();
-        strokeWeight(1);
+        strokeWeight(.5);
         stroke(60,100);
         line(i, 0, i, height);
         pop();
@@ -79,21 +82,11 @@ if(true)
 
 }
 
-// function onScreen(padding, pt){
-//     if (pt.x > width - padding ||
-//         pt.x < 0 + padding ||
-//         pt.y > height - padding ||
-//         pt.y < 0 + padding)
-//         return true
-//     else
-//         return false
-
-// }
 let levelData = {};
 levelData.Terrain = [];
 levelData.Win = [];
 levelData.PlayerSpawns = [];
-let snap = 15
+let snap = 15;
 
 let editorVertexes = [];
 

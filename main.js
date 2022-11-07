@@ -9,7 +9,7 @@ let mouse;
 
 
 function preload() {
-    for (let index = 0; index <= 6; index++) {
+    for (let index = 0; index <= 2; index++) {
         LoadedLevels.push(loadJSON('Levels/' + index + '.json',));
     }
    
@@ -23,7 +23,7 @@ function setup() {
         LoadedLevels[index] = new LEVEL(LoadedLevels[index]);
     }
 
-    game = new Game(false, 1);
+    game = new Game(false, 2);
 }
 
 function draw() {
@@ -38,7 +38,7 @@ function draw() {
    cFormat(0)
 
     game.update();
-    // cFilter();
+    //cFilter();
     //shapeEditor();
 
 

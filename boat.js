@@ -163,11 +163,11 @@ class Boat {
             
         }
         else {
-            let monitor = (pt.x > padding && pt.x < padding + 360) && (pt.y > height - padding - sonarRange && pt.y < height-padding);
+            // let monitor = (pt.x > padding && pt.x < padding + 360) && (pt.y > height - padding - sonarRange && pt.y < height-padding);
             if (pt.x > width - padding ||
                 pt.x < 0 + padding ||
                 pt.y > height - padding ||
-                pt.y < 0 + padding || monitor)
+                pt.y < 0 + padding )
                 return true
             else
                 return false

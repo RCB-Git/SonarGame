@@ -23,10 +23,11 @@ class cShape {
     display() {
         // point(this.pos.x, this.pos.y); // show center
         //circle(this.pos.x, this.pos.y, this.max * 2); // show C-range
-
-
-        this.move();
-
+        beginShape();
+        this.vert.forEach(vert => {
+            vert.cVertex();
+        });
+        endShape();
         for (let i = 0; i < this.sides.length; i++)
             this.sides[i].display();
 
@@ -70,7 +71,7 @@ class cShape {
     }
 
     checkP(p) {
-    //    console.log(p)
+        //    console.log(p)
         if (p.distanceTo(this.pos) < this.max) {
             let count = 0;
             for (let i = 0; i < this.sides.length; i++) {
@@ -78,8 +79,8 @@ class cShape {
             }
             if (count % 2 == 1)
                 return true;
-                else return false;
-         } else
+            else return false;
+        } else
             return false;
     } // check if a given point is inside the bounds of this shape. return bool
 
@@ -144,7 +145,7 @@ class cPoint {
     cVertex() {
         vertex(this.x, this.y);
     } // Adds a vertex at "this" point
-    verif(){console.log("Verif = true")}
+    verif() { console.log("Verif = true") }
 } // Custom point object. Accepts an X and Y. Used with cLine and cShape
 
 class cLine {
@@ -194,7 +195,7 @@ class cLine {
                 out = this.p2;
             else out = this.p1;
 
-           // line(p.x,p.y, out.x, out.y)
+        // line(p.x,p.y, out.x, out.y)
         if (qdistance != null)
             return p.distanceTo(out)
 

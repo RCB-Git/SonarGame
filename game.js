@@ -8,71 +8,88 @@ class Game {
         this.BRG = [];
         this.padding = 30;
 
-        this.sonarRange = 200;
+        this.sonarRange = 150;
         {
-        this.monitor = new cShape(0, 0, [this.padding, height - this.padding,
-        this.padding, height - this.padding - this.sonarRange,
-        this.padding + 360, height - this.padding - this.sonarRange,
-        this.padding + 360, height - this.padding]);
+            this.monitor = new cShape(0, 0, [
+            this.padding, height - this.padding,
+            this.padding, height - this.padding - this.sonarRange*2,
+            this.padding + this.sonarRange*2, height - this.padding - this.sonarRange*2,
+            this.padding + this.sonarRange*2, height - this.padding]);
         }
     }
 
     update() {
-        // this.Level.debug();
-
+        this.Level.debug();
+        fill(60)
+        this.monitor.display(); 
         this.Player.update();
         this.Player.display();
-        
-        if (!noclip){
+
+        if (!noclip) {
             this.Player.checkCollide(this.Level.Terrain);
-            // console.log(this.offmonitor(mouse))
-            this.Player.pos = this.offmonitor(this.Player.pos)
         }
-        this.contactGraph();
+        this.contactGraph(false);
 
 
         this.Enemies.forEach(element => {
             element.display();
             element.update();
         });
-
+       
+        
         this.border();
     }
 
-    contactGraph() {
+    contactGraph(graph) {
+        let inc = 5
+        for (let index = 0; index < inc; index++) {        
         this.Player.sweeperAngle += 1;
         this.Player.sweeperAngle = this.Player.sweeperAngle % 360;
         let ang = this.Player.sweeperAngle;
-
-
         this.BRG[ang] = this.raycast(this.Player.pos, radians(ang), this.sonarRange)
+        }
+        //every frame raycast 5 degree increments
 
         push();//1
         {
             translate(this.padding, height - this.padding);
-            fill(60)
-            rect(0,0,360,-this.sonarRange)
-            let shift = mouseX;
-            for (let index = shift; index < this.BRG.length; index++) {
-                const element = this.BRG[index];
-                // if(index%30 == 0 )
-                // text(index, this.sonarRange, index);
-                point(index, -element)
-            }
-            let adj = degrees(this.Player.heading) % 360
+            fill(60);
+            let adj = degrees(this.Player.heading) % 360;
             if (adj < 0)
                 adj = 360 + adj;
+
+                let anglevec = new p5.Vector();
+            if (graph) {
+                for (let index = 0; index < this.BRG.length; index++) {
+                    const element = this.BRG[(index + Math.floor(adj + 180)) % 360];
+                    point(index, -element)
+                }
+            } else {
+                for (let index = 0; index < this.BRG.length; index++) {
+                    const element = this.BRG[index];
+                    anglevec = p5.Vector.fromAngle(radians(index),element)
+                    point(anglevec.x + this.sonarRange, anglevec.y - this.sonarRange)
+                }
+            }
+
             push();//2
-            {
-                cFormat(1)
-                stroke(255);
-                line(ang % 360, 0, ang % 360, -this.sonarRange)//sweep
+            if (graph) {
+                cFormat(1);
+                stroke(255)
+                stroke(0,255,0)
+                line(360/2, 0, 360/2, -this.sonarRange)
+                this.Player.pos = this.offmonitor(this.Player.pos)
+            } else {
+                this.Player.pos = this.offmonitor(this.Player.pos)
+                cFormat(1);
                 stroke(0, 255, 0)
-                line(adj, 0, adj, -this.sonarRange)//0deg
-                stroke(255, 0, 0)
-                line((adj + 180) % 360, 0, (adj + 180) % 360, -this.sonarRange)//180
-                cFormat(0)
-                rect(0, 0, 360, -this.sonarRange)//border
+                anglevec = p5.Vector.fromAngle(this.Player.heading).setMag(25);
+                line(this.sonarRange, - this.sonarRange, this.sonarRange+ anglevec.x, -this.sonarRange + anglevec.y )
+                
+                circle(this.sonarRange, - this.sonarRange, 100)
+                circle(this.sonarRange, - this.sonarRange, 200)
+                circle(this.sonarRange, - this.sonarRange, 300)
+
             }
             pop();//2
         }
@@ -82,10 +99,13 @@ class Game {
     setLevel(i) {
         this.Level = LoadedLevels[i];
         this.resetSubs();
+        this.cleanCanvas();
     }
+
     resetPlayer() {
         this.Player.pos = new cPoint(this.Level.PlayerSpawns[i].x, this.Level.PlayerSpawns[i].y);
     }
+
     addSub(pos, iscont) {
         this.Enemies.push(new Boat(pos, iscont, this.Level))
     }
@@ -96,14 +116,14 @@ class Game {
         if (!lidar)
             line(origin.x, origin.y, vec.x + origin.x, vec.y + origin.y)
         let inc = 1;
-
+        this.monitor.display();
         for (let i = .5; i < range; i += inc) {
             vec.setMag(i);
             let active = new cPoint(origin.x + vec.x, origin.y + vec.y)
             if (lidar)
                 point(active.x, active.y) // debug point
 
-            if (this.checkPT(active) || this.Player.onScreen(this.padding, active))
+            if (this.checkPT(active) || this.Player.onScreen(this.padding, active) || this.monitor.checkP(active))
                 return (this.Player.pos.distanceTo(active));
 
 
@@ -141,24 +161,27 @@ class Game {
         rect(0, 0, width, this.padding)
         rect(width, height, - width, -this.padding)
         rect(width, height, -this.padding, -height)
+        // to erase stray lines
+
         noFill();
         stroke(255)
         push();
         translate(this.padding, this.padding)
         rect(0, 0, width - this.padding * 2, height - this.padding * 2)
+        //draws border
         pop();
     }
-
-   
     offmonitor(p) {
-       if(this.monitor.checkP(p))
-       return(this.monitor.getReturnTo(p));
-
-       return p;
+        if (this.monitor.checkP(p))
+            return (this.monitor.getReturnTo(p));
+        return p;
+    }
+    cleanCanvas() {
+        background(60);
     }
 }
 //cheats to make me not go insane
 let noclip = false;
-let lidar = true;
+let lidar = false;
 let swiftness = 0;
 let ice = 1; 

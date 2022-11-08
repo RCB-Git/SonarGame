@@ -7,15 +7,16 @@ let lastT;
 let LoadedLevels = [];
 let mouse;
 
-
+let tone = new p5.Oscillator('sine');
 function preload() {
-    for (let index = 0; index <= 2; index++) {
+    for (let index = 0; index <= 4; index++) {
         LoadedLevels.push(loadJSON('Levels/' + index + '.json',));
     }
    
 }
 
 function setup() {
+    tone.start();
     createCanvas(850, 850);
     background(60)
     for (let index = 0; index < LoadedLevels.length; index++) {
@@ -23,10 +24,11 @@ function setup() {
         LoadedLevels[index] = new LEVEL(LoadedLevels[index]);
     }
 
-    game = new Game(false, 1); // GAME INITALIZE DO NOT REMOVE; 
+    game = new Game(true, 1); // GAME INITALIZE DO NOT REMOVE; 
 }
 
 function draw() {
+    tone.amp( 1)
     mouse = new cPoint(mouseX, mouseY)
     // console.log("Frame Rate = "+frameRate())
     deltaT = millis() - lastT;
@@ -38,7 +40,7 @@ function draw() {
    cFormat(0)
 
     game.update();
-    //cFilter();
+    cFilter();
     //shapeEditor();
 
 
@@ -62,12 +64,13 @@ function cFilter(){
     noStroke();
     fill(0,200,0,0); // tint
     rect(0,0, width, height)
+  
 pop();
 let iter = 6
 for(let i = 0; i < height; i +=iter){
     push();
     strokeWeight(2);
-    stroke(60,255);
+    stroke(60,15)
     line(0,i, width, i);
     pop();
 }

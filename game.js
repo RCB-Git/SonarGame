@@ -17,12 +17,18 @@ class Game {
                 this.padding + this.sonarRange * 2, height - this.padding - this.sonarRange * 2,
                 this.padding + this.sonarRange * 2, height - this.padding]);
         }
+        
+        this.cPitch = 0;
+        this.maxPitch = 800; 
+        this.minPitch = 0; 
     }
 
     update() {
-        //this.Level.debug();
+        
+        // this.Level.debug();
 
         fill(60, 1);
+        stroke(52, 107, 49);
         this.monitor.display();
 
         this.Player.update();
@@ -44,12 +50,19 @@ class Game {
     }
 
     contactGraph() {
-        let inc = 3
+        let inc = 4
         for (let index = 0; index < inc; index++) {
             this.Player.sweeperAngle += 1;
             this.Player.sweeperAngle = this.Player.sweeperAngle % 360;
             let ang = this.Player.sweeperAngle;
-            this.BRG[ang] = this.raycast(this.Player.pos, radians(ang), this.sonarRange)
+            this.BRG[ang] = this.raycast(this.Player.pos, radians(ang), this.sonarRange);
+            if(this.BRG[ang] != null){
+            tone.freq(( this.BRG[ang][0]/this.sonarRange)*this.maxPitch);
+            }
+            else
+            {
+            tone.freq(this.minPitch)
+            }
         }
         //every frame raycast in degree increments
 
@@ -72,7 +85,7 @@ class Game {
 
 
                 for (let i = 0; i < inc; i++) {
-                    anglevec = p5.Vector.fromAngle(radians(this.Player.sweeperAngle-i)).setMag(this.sonarRange);
+                    anglevec = p5.Vector.fromAngle(radians(this.Player.sweeperAngle - i)).setMag(this.sonarRange);
                     line(this.sonarRange, -this.sonarRange, this.sonarRange + anglevec.x, - this.sonarRange + anglevec.y);
                 }//display line
 
@@ -106,8 +119,8 @@ class Game {
                         stroke(255, 0, 0)
                     if (element[1] == 2)
                         stroke(0, 255, 0)
-
-                    point(anglevec.x + this.sonarRange, anglevec.y - this.sonarRange)
+                    
+                    point(anglevec.x + this.sonarRange, anglevec.y - this.sonarRange) //turn this off for sound only navigation
                 }
 
 
@@ -138,16 +151,17 @@ class Game {
     raycast(origin, angle, range) {
 
         let vec = p5.Vector.fromAngle(angle, range)
-        if (!lidar)
-            line(origin.x, origin.y, vec.x + origin.x, vec.y + origin.y)
-            
+
+
         let inc = 1;
         this.monitor.display();
         for (let i = .5; i < range; i += inc) {
             vec.setMag(i);
             let active = new cPoint(origin.x + vec.x, origin.y + vec.y)
-            // if (lidar)
-            //     point(active.x, active.y) // debug point
+            if (lidar)
+                point(active.x, active.y) // debug point
+            if (this.monitor.checkP(active))
+                line(active.x, active.y,)
 
             if (this.checkPT(active) || this.Player.onScreen(this.padding, active) || this.monitor.checkP(active))
                 return [(this.Player.pos.distanceTo(active)), 0];
@@ -159,10 +173,6 @@ class Game {
                 if (boat.pos.distanceTo(active) < boat.sonarCoef) {
                     return [active.distanceTo(origin), 1];
                 }
-
-
-
-
             }
             this.Enemies.forEach(boat => {
 
@@ -216,6 +226,7 @@ class Game {
 
         noFill();
         stroke(255)
+        stroke(52, 107, 49);
         push();
         translate(this.padding, this.padding)
         rect(0, 0, width - this.padding * 2, height - this.padding * 2)

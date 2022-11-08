@@ -23,7 +23,7 @@ function setup() {
         LoadedLevels[index] = new LEVEL(LoadedLevels[index]);
     }
 
-    game = new Game(false, 2);
+    game = new Game(false, 1); // GAME INITALIZE DO NOT REMOVE; 
 }
 
 function draw() {
@@ -84,7 +84,7 @@ if(true)
 
 let levelData = {};
 levelData.Terrain = [];
-levelData.Win = [];
+levelData.WinZones = [];
 levelData.PlayerSpawns = [];
 let snap = 15;
 
@@ -100,7 +100,6 @@ function shapeEditor() {
     }
     for (let i = 0; i < levelData.PlayerSpawns.length; i += 1) {
         stroke(50, 255, 50)
-        // print("@" + editorVertexes.PlayerSpawns[i].x + " " + editorVertexes.PlayerSpawns[i].y )
         levelData.PlayerSpawns[i].display();
     }
     strokeWeight(1);
@@ -120,6 +119,12 @@ function keyPressed() {
         levelData.Terrain.push(new cShape(0, 0, editorVertexes));
         editorVertexes = [];
     }
+
+    if (key == "e" && editorVertexes.length > 2) {
+        levelData.WinZones.push(new cShape(0, 0, editorVertexes));
+        editorVertexes = [];
+    }
+
     if (key == "s") {
         levelData.PlayerSpawns.push(mouse);
         print("new playerspawn at :" + mouse.x + " " + mouse.y)

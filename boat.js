@@ -1,14 +1,12 @@
 class Boat {
-    constructor(startpos, controlled, startLevel) {
-
-        this.Level = startLevel
+    constructor(startpos, controlled) {
 
         this.health = 3;
         this.pos = startpos
         this.heading = 0;
         this.v = createVector(0, 0);
         this.padding = 30;
-        this.sonarCoef = 30;
+        this.sonarCoef = 5;
         
         this.sweeperAngle =0; 
         this.BRG = [];
@@ -33,7 +31,7 @@ class Boat {
 
         this.fcooldown = 100;
 
-        this.pcooldown = 100;
+   
         this.pID;
     }
 
@@ -42,9 +40,6 @@ class Boat {
         {
             this.fcooldown -= 1;
             this.fcooldown = constrain(this.fcooldown, 0, 100);
-
-            this.pcooldown -= 1;
-            this.pcooldown = constrain(this.pcooldown, 0, 100);
         }
 
         // circle(this.pos.x, this.pos.y, this.sonarCoef)
@@ -76,13 +71,6 @@ class Boat {
         console.log("fire is on cooldown for " + this.fcooldown)
     }
 
-    ping() {
-        if (this.pcooldown <= 0) {
-            this.pcooldown = 100;
-
-        }
-        console.log("Ping is on cooldown for " + this.pcooldown)
-    }
     
     
 
@@ -100,9 +88,7 @@ class Boat {
         if (keyIsDown(68))//d
             this.slewfloat += slewadj;
         if (keyIsDown(32))//spacebar
-            this.ping()
-        if (keyIsDown(70))//spacebar
-            this.fire()
+            //this.l()
         if (this.v.mag() < .001)
             this.v.mult(0)
         //Fix values

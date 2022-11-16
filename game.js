@@ -7,30 +7,39 @@ class Game {
         this.Enemies = [];
         this.Torpedoes = [];
         this.BRG = [];
-        this.padding = 30;
+        padding = 30;
 
         this.sonarRange = 150;
         {
             this.monitor = new cShape(0, 0, [
-                this.padding, height - this.padding,
-                this.padding, height - this.padding - this.sonarRange * 2,
-                this.padding + this.sonarRange * 2, height - this.padding - this.sonarRange * 2,
-                this.padding + this.sonarRange * 2, height - this.padding]);
+                padding, height - padding,
+                padding, height - padding - this.sonarRange * 2,
+                padding + this.sonarRange * 2, height - padding - this.sonarRange * 2,
+                padding + this.sonarRange * 2, height - padding]);
         }
-        
+
+        this.tone = new p5.Oscillator('sine');
+        this.tone.amp(1,.1);
         this.cPitch = 0;
-        this.maxPitch = 800; 
-        this.minPitch = 0; 
+        this.maxPitch = 800;
+        this.minPitch = 0;
+         this.tone.start();
+
+        this.engineSound = new p5.Oscillator('triangle')
+        this.engineSound.amp(1,.1);
+        this.engineSound.start();
+
+        this.cleanCanvas();
     }
 
     update() {
-        
-        // this.Level.debug();
+
 
         fill(60, 1);
-        stroke(52, 107, 49);
+        stroke(255);
+    
         this.monitor.display();
-
+        stroke(255)
         this.Player.update();
         this.Player.display();
         if (this.checkWin(this.Player.pos))
@@ -46,29 +55,33 @@ class Game {
             element.update();
         });
 
-        this.border();
+        //sound stuff()
+        this.engine()
     }
 
+
+    //Graph Stuff------
+
     contactGraph() {
-        let inc = 4
+        let inc = 3
         for (let index = 0; index < inc; index++) {
             this.Player.sweeperAngle += 1;
             this.Player.sweeperAngle = this.Player.sweeperAngle % 360;
             let ang = this.Player.sweeperAngle;
             this.BRG[ang] = this.raycast(this.Player.pos, radians(ang), this.sonarRange);
-            if(this.BRG[ang] != null){
-            tone.freq(( this.BRG[ang][0]/this.sonarRange)*this.maxPitch);
+            if (this.BRG[ang] != null) {
+                this.tone.freq(this.maxPitch - (this.BRG[ang][0] / this.sonarRange) * this.maxPitch,.1);
+
             }
-            else
-            {
-            tone.freq(this.minPitch)
+            else {
+                this.tone.freq(this.minPitch,.1)
             }
         }
         //every frame raycast in degree increments
 
         push();//1
         {
-            translate(this.padding, height - this.padding);
+            translate(padding, height - padding);
             fill(60);
             let adj = degrees(this.Player.heading) % 360;
             if (adj < 0)
@@ -110,8 +123,9 @@ class Game {
             for (let index = 0; index < this.BRG.length; index++) {
                 if (this.BRG[index] != null) {
                     const element = this.BRG[index];
-                    let noise = random(-1, 1)
+                    let noise = random(3,6)
                     anglevec = p5.Vector.fromAngle(radians(index), element[0] + noise)
+
 
                     if (element[1] == 0)
                         stroke(255, 255, 255)
@@ -119,8 +133,10 @@ class Game {
                         stroke(255, 0, 0)
                     if (element[1] == 2)
                         stroke(0, 255, 0)
-                    
+
                     point(anglevec.x + this.sonarRange, anglevec.y - this.sonarRange) //turn this off for sound only navigation
+                    stroke(255, 5)
+                    // line(anglevec.x + this.sonarRange, anglevec.y - this.sonarRange, reach.x+this.sonarRange, reach.y-this.sonarRange )
                 }
 
 
@@ -131,40 +147,21 @@ class Game {
         pop();//1
     }
 
-    setLevel(i) {
-        this.Level = LoadedLevels[i];
-        this.levelnum = i;
-        this.resetSubs();
-        this.cleanCanvas();
-    }
-
-    resetPlayer() {
-        this.BRG = [];
-        this.Player.v.mult(0);
-        this.Player.pos = new cPoint(this.Level.PlayerSpawns[i].x, this.Level.PlayerSpawns[i].y);
-    }
-
-    addSub(pos, iscont) {
-        this.Enemies.push(new Boat(pos, iscont, this.Level))
-    }
-
     raycast(origin, angle, range) {
 
         let vec = p5.Vector.fromAngle(angle, range)
 
 
         let inc = 1;
-        this.monitor.display();
         for (let i = .5; i < range; i += inc) {
             vec.setMag(i);
             let active = new cPoint(origin.x + vec.x, origin.y + vec.y)
             if (lidar)
                 point(active.x, active.y) // debug point
-            if (this.monitor.checkP(active))
-                line(active.x, active.y,)
 
-            if (this.checkPT(active) || this.Player.onScreen(this.padding, active) || this.monitor.checkP(active))
+            if (this.checkPT(active) || this.Player.onScreen(padding, active) || this.monitor.checkP(active))
                 return [(this.Player.pos.distanceTo(active)), 0];
+
             if (this.checkWin(active))
                 return [(this.Player.pos.distanceTo(active)), 2];
 
@@ -174,19 +171,32 @@ class Game {
                     return [active.distanceTo(origin), 1];
                 }
             }
-            this.Enemies.forEach(boat => {
-
-            });
-
-
         }
 
     }
 
+    //Level Manipulation --------
+    setLevel(i) {
+        this.Level = LoadedLevels[i];
+        this.levelnum = i;
+        this.resetSubs();
+        this.cleanCanvas();
+    }
     resetSubs() {
         this.Player.pos = new cPoint(this.Level.PlayerSpawns[0].x, this.Level.PlayerSpawns[0].y);
+        this.Player.heading = 0;
+    }
+    resetPlayer() {
+        this.BRG = [];
+        this.Player.v.mult(0);
+        this.Player.pos = new cPoint(this.Level.PlayerSpawns[i].x, this.Level.PlayerSpawns[i].y);
+    }
+    addSub(pos, iscont) {
+        this.Enemies.push(new Boat(pos, iscont, this.Level))
     }
 
+
+    //Zone Detection ------ 
     checkPT(p) {
 
         for (let index = 0; index < this.Level.Terrain.length; index++) {
@@ -213,35 +223,29 @@ class Game {
         this.setLevel(this.levelnum + 1);
     }
 
-    border() {
-        cFormat(0);
-        fill(60);
-        noStroke();
-
-        rect(0, 0, this.padding, height)
-        rect(0, 0, width, this.padding)
-        rect(width, height, - width, -this.padding)
-        rect(width, height, -this.padding, -height)
-        // to erase stray lines
-
-        noFill();
-        stroke(255)
-        stroke(52, 107, 49);
-        push();
-        translate(this.padding, this.padding)
-        rect(0, 0, width - this.padding * 2, height - this.padding * 2)
-        //draws border
-        pop();
-    }
     offmonitor(p) {
         if (this.monitor.checkP(p))
             return (this.monitor.getReturnTo(p));
         return p;
     }
+
+    //UI stuff ----------
+
+   
+
     cleanCanvas() {
         background(60);
     }
+
+    //sound stuff
+    engine() {
+  
+    this.engineSound.freq(40*(this.Player.v.mag()/ .5))
+
+    }
 }
+
+
 //cheats to make me not go insane
 let noclip = false;
 let lidar = false;

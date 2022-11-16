@@ -84,20 +84,6 @@ class cShape {
             return false;
     } // check if a given point is inside the bounds of this shape. return bool
 
-    // checkS(s) {
-    //     if (dist(s.xPos, s.yPos, this.pos.x, this.pos.y) <= this.max + s.max) {
-    //         for (let i = 0; i < s.vert.length; i++)
-    //             if (this.checkP(s.vert[i])) {
-    //                 return true;
-    //             }
-    //         for (let i = 0; i < this.vert.length; i++)
-    //             if (s.checkP(this.vert[i])) {
-    //                 return true;
-    //             }
-    //     }
-    //     return false;
-    // } // checks to see if a shape is touching T/F
-
     getClosestSide(p) {
         let min = Infinity;
         let ref;
@@ -157,7 +143,6 @@ class cLine {
 
     display() {
         line(this.p1.x, this.p1.y, this.p2.x, this.p2.y);
-        // line(mouseX,0,mouseX,this.slope * (mouseX - this.p1.x) + this.p1.y)
     } // shows the line;
 
     reachTest(p) {
@@ -170,7 +155,6 @@ class cLine {
         } else return false;
     } // tests if a given point drops down and touches return true;
 
-    //IMPORTANT SHIT HERE 
     distanceTo(p, qdistance) {
 
         let out;
@@ -201,6 +185,5 @@ class cLine {
 
         return out;
     }
-    //collison methods 
 
 } // accepts two cPoint objects, from and to

@@ -13,11 +13,11 @@ let state = 0;
 let pixelated;
 let padding = 30;
 
-let StageNames = ["liminal", "Welcome", "Spelunking", "Leap", "precision", "Interfereance","you are not alone." ]
+let StageNames = ["liminal", "Welcome", "Spelunking", "Breadcrumbs", "Precision", "Interfereance", "you are not alone."]
 
 function preload() {
     pixelated = loadFont('Fonts/slkscr.ttf');
-    for (let index = 0; index <= 2; index++) {
+    for (let index = 0; index <= 6; index++) { // IMPORT LEVELS FROM FOLDER CHANGE NUMBER TO INCLUDE MORE
         LoadedLevels.push(loadJSON('Levels/' + index + '.json',));
     }
 
@@ -46,16 +46,19 @@ function draw() {
     background(60, 15);
     cFormat(0)
     push()
-    shapeEditor();
+    //shapeEditor();
     pop()
     gameHandler();
 
     SFX();
 
     cFormat(3)
-    text("flying blind V1.0 ... 'Y' to start.", padding, padding - 5)
-    if(started)
-    text("stage:  "+ StageNames[game.levelnum],2* width/3,padding-5)
+    if (!started)
+        text("Diving blind V1.1 ... press  'Y' to start.", padding, padding - 5)
+    else
+        text("Diving blind V1.1", padding, padding - 5)
+    if (started)
+        text("stage 0" + game.levelnum + ": " + StageNames[game.levelnum], width - 20 * (14 + StageNames[game.levelnum].length), padding - 5)
 
 }
 
@@ -94,7 +97,7 @@ function cFormat(c) {
     }
 
 }
-function SFX() { 
+function SFX() {
     function cFilter() {
         border();
         push()
@@ -204,12 +207,12 @@ function keyPressed() {
             saveJSON(levelData, "1");
         }
         pop();
-     
-    }
-  
-        if (key == "y" && !started) {
-            startGame();
-        }
 
-    
+    }
+
+    if (key == "y" && !started) {
+        startGame();
+    }
+
+
 }

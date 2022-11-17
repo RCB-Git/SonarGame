@@ -1,0 +1,10 @@
+{
+  "Terrain": [],
+  "WinZones": [],
+  "PlayerSpawns": [
+    {
+      "x": 585,
+      "y": 405
+    }
+  ]
+}

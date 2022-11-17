@@ -5,6 +5,9 @@ class Game {
         this.levelnum = StartLevel;
         this.Player = new Boat(new cPoint(this.Level.PlayerSpawns[0].x, this.Level.PlayerSpawns[0].y), true);
         this.Enemies = [];
+        this.countdown = 0;
+        this.saftey = false;
+        this.final = false
         this.Torpedoes = [];
         this.BRG = [];
         padding = 30;
@@ -19,17 +22,19 @@ class Game {
         }
 
         this.tone = new p5.Oscillator('sine');
-        this.tone.amp(1,.1);
+        this.tone.amp(1, .1);
         this.cPitch = 0;
         this.maxPitch = 800;
         this.minPitch = 0;
-         this.tone.start();
+        this.tone.start();
 
         this.engineSound = new p5.Oscillator('triangle')
-        this.engineSound.amp(1,.1);
+        this.engineSound.amp(1, .1);
         this.engineSound.start();
 
         this.cleanCanvas();
+
+
     }
 
     update() {
@@ -37,7 +42,7 @@ class Game {
 
         fill(60, 1);
         stroke(255);
-    
+
         this.monitor.display();
         stroke(255)
         this.Player.update();
@@ -51,12 +56,26 @@ class Game {
         this.contactGraph();
 
         this.Enemies.forEach(element => {
-            element.display();
+            //  element.display();
             element.update();
         });
 
         //sound stuff()
         this.engine()
+
+        //for trolling
+        this.countdown = constrain(this.countdown - deltaT, 0, 10)
+        if (this.countdown == 0 && this.saftey){
+            this.trolling();
+            this.saftey = false;
+            this.final = true;
+            this.countdown = 3; 
+        }
+        if(this.final && this.countdown == 0)
+        {
+            johnmadden();
+        }
+
     }
 
 
@@ -70,11 +89,20 @@ class Game {
             let ang = this.Player.sweeperAngle;
             this.BRG[ang] = this.raycast(this.Player.pos, radians(ang), this.sonarRange);
             if (this.BRG[ang] != null) {
-                this.tone.freq(this.maxPitch - (this.BRG[ang][0] / this.sonarRange) * this.maxPitch,.1);
+                let type = this.BRG[ang][1];
+
+                this.tone.setType('sine');
+                if (type == 1)
+                    this.tone.setType('sawtooth');
+                else
+                    if (type == 2)
+                        this.tone.setType('square');
+
+                this.tone.freq(this.maxPitch - (this.BRG[ang][0] / this.sonarRange) * this.maxPitch, .1);
 
             }
             else {
-                this.tone.freq(this.minPitch,.1)
+                this.tone.freq(this.minPitch, .1)
             }
         }
         //every frame raycast in degree increments
@@ -118,25 +146,23 @@ class Game {
             }
             pop();// UI Graphics
 
-
-
             for (let index = 0; index < this.BRG.length; index++) {
                 if (this.BRG[index] != null) {
                     const element = this.BRG[index];
-                    let noise = random(3,6)
+                    let noise = random(3, 6)
                     anglevec = p5.Vector.fromAngle(radians(index), element[0] + noise)
 
 
                     if (element[1] == 0)
                         stroke(255, 255, 255)
-                    if (element[1] == 1)
-                        stroke(255, 0, 0)
                     if (element[1] == 2)
                         stroke(0, 255, 0)
+                    if (element[1] == 1)
+                        stroke(255, 0, 0)
+
 
                     point(anglevec.x + this.sonarRange, anglevec.y - this.sonarRange) //turn this off for sound only navigation
-                    stroke(255, 5)
-                    // line(anglevec.x + this.sonarRange, anglevec.y - this.sonarRange, reach.x+this.sonarRange, reach.y-this.sonarRange )
+
                 }
 
 
@@ -152,7 +178,7 @@ class Game {
         let vec = p5.Vector.fromAngle(angle, range)
 
 
-        let inc = 1;
+        let inc = 3;
         for (let i = .5; i < range; i += inc) {
             vec.setMag(i);
             let active = new cPoint(origin.x + vec.x, origin.y + vec.y)
@@ -221,6 +247,12 @@ class Game {
     progress() {
         console.log("You Win!!")
         this.setLevel(this.levelnum + 1);
+        this.Player.sweeperAngle = 0;
+        if (this.levelnum == 6) {
+            this.countdown = 10
+            this.saftey = true
+        }
+
     }
 
     offmonitor(p) {
@@ -231,7 +263,7 @@ class Game {
 
     //UI stuff ----------
 
-   
+
 
     cleanCanvas() {
         background(60);
@@ -239,15 +271,25 @@ class Game {
 
     //sound stuff
     engine() {
-  
-    this.engineSound.freq(40*(this.Player.v.mag()/ .5))
+        this.engineSound.freq(40 * (this.Player.v.mag() / .5))
+    }
+
+    trolling() {
+
+
+        let pos = new cPoint(this.Player.pos.x, this.Player.pos.y);
+        pos.add(p5.Vector.fromAngle(this.Player.heading - Math.PI, this.sonarRange / 4));
+
+        this.Enemies.push(new Boat(pos, false));
+
 
     }
+
 }
-
-
 //cheats to make me not go insane
 let noclip = false;
 let lidar = false;
 let swiftness = 0;
-let ice = 1; 
+let ice = 1;
+
+

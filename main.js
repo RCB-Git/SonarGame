@@ -12,9 +12,12 @@ let state = 0;
 
 let pixelated;
 let padding = 30;
+let beep;
 
 let StageNames = ["liminal", "Welcome", "Spelunking", "Breadcrumbs", "Precision", "Interfereance", "you are not alone."]
+let clean = false
 
+let score = 0;
 function preload() {
     pixelated = loadFont('Fonts/slkscr.ttf');
     for (let index = 0; index <= 6; index++) { // IMPORT LEVELS FROM FOLDER CHANGE NUMBER TO INCLUDE MORE
@@ -26,6 +29,8 @@ function preload() {
 function setup() {
     frameRate(60)
     createCanvas(1200, 850);
+
+    // if(started)
     background(60)
     for (let index = 0; index < LoadedLevels.length; index++) {
         const element = LoadedLevels[index];
@@ -33,15 +38,23 @@ function setup() {
     }
 
     textFont(pixelated)
+    fill(255)
+    beep = new p5.Oscillator('square');
+    beep.amp(0);
+    beep.freq(500);
+    beep.start();
 }
 
 function draw() {
 
+    if (clean) background(50)
+    clean = false;
     mouse = new cPoint(mouseX, mouseY)
     // console.log("Frame Rate = "+frameRate())
     deltaT = millis() - lastT;
     lastT = millis();
     deltaT /= 1000;
+
 
     background(60, 15);
     cFormat(0)
@@ -53,12 +66,16 @@ function draw() {
     SFX();
 
     cFormat(3)
-    if (!started)
+    if (!started) {
         text("Diving blind V1.1 ... press  'Y' to start.", padding, padding - 5)
+        tutorial();
+        clean = true;
+    }
     else
-        text("Diving blind V1.1", padding, padding - 5)
+        text("Diving blind V1.1 || crash rating:" + score, padding, padding - 5)
     if (started)
         text("stage 0" + game.levelnum + ": " + StageNames[game.levelnum], width - 20 * (14 + StageNames[game.levelnum].length), padding - 5)
+
 
 }
 
@@ -102,7 +119,7 @@ function SFX() {
         border();
         push()
         noStroke();
-        fill(0, 200, 0, 0); // tint
+        // fill(0, 200, 0, 0); // tint
         rect(0, 0, width, height)
 
         pop();
@@ -137,8 +154,69 @@ function SFX() {
     cFilter();
 }
 
+let prev;
+function tutorial() {
+    push()
+    let txt = 25;
+    translate(padding * 1.5, padding * 1.5)
+    textSize(txt)
+    function delay(delay, char) {
+        let out = ""
+        while (out.length < delay)
+            out += char;
+        return out
+    }
+    function ctext(str, len, special) {
+        if (special == null)
+            special = "."
+        return (str + delay(len - str.length, special))
+
+    }
+    let welcome2 = "\n" +
+        "  l" + "\n" +
+        " ll" + "\n";
+    let welcome = "\n" +
+        "∎   ∎  ∎∎∎∎ ∎    ∎∎∎  ∎∎∎∎  ∎∎∎∎∎  ∎∎∎∎    ∎" + "\n" +
+        "∎ ∎ ∎  ∎∎   ∎    ∎    ∎  ∎  ∎ ∎ ∎  ∎∎      ∎" + "\n" +
+        " ∎ ∎   ∎∎∎∎ ∎∎∎  ∎∎∎  ∎∎∎∎  ∎   ∎  ∎∎∎∎    o" + "\n";
+    let str =
+        ctext("Bootstrap Initiated", 30) + "\n" +
+        welcome + "\n" +
+        ctext("Starting Tutorial sequence", 30) + "\n" +
+        ctext("-enable audio- ", 30, ' ') + "\n" +
+        ctext("Your objective: " + delay(5, " ") + " Locate and enter the green zone to progress", 0) + "\n\n\n" +
+        ctext("Controlls:", 15, " ") + "\n" +
+        ctext("*use vertical arrows to move forward and back,", 30) + "\n" +
+        ctext("*use lateral arrows to rotate", 30, " ") + "\n" +
+        ctext("*Use the Sonar monitor to navigate, avoid walls", 30) + "\n\n\n" +
+        ctext("Press Y to begin", 30) + "\n" + delay(300, " ") + "\n\n" +
+        "Autostart Initiated . . . " + delay(30, " ");
+
+    let prt = str.substring(0, (int)(frameCount * .5));
+    let edit = prt;
+
+    while (edit.substring(edit.length - 5) == "     ");
+    edit = edit.substring(0, edit.length - 1)
+    
+    if (frameCount % 50 > 25)
+
+        text(edit, 0, txt)
+    else
+        text(edit + "|", 0, txt)
+
+    if (prt.length >= str.length) startGame();
+
+    if (prt.substring(prt.length - 1) != prev) {
+        beep.amp(.15);
+    }
+    else
+        beep.amp(0)
+
+    prev = prt.substring(prt.length - 1);
 
 
+
+}
 
 
 

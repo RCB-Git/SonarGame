@@ -19,7 +19,7 @@ class Boat {
         {
             this.accel = .01 + swiftness;
             
-            this.friction = .98  *ice
+            this.friction = .985  *ice
 
             this.slewSpeed = .006;
             this.slewfloat = 0;
@@ -79,13 +79,13 @@ class Boat {
         let slewadj = this.slewSpeed // * deltaT;
         let add = createVector(0, 0);
 
-        if (keyIsDown(87))// w
+        if (keyIsDown(87) || keyIsDown(38))// w
             add.add(p5.Vector.fromAngle(this.heading, acceladj))
-        if (keyIsDown(83))//s
+        if (keyIsDown(83) || keyIsDown(40))//s
             add.add(p5.Vector.fromAngle(this.heading, -acceladj * .25))
-        if (keyIsDown(65))//a
+        if (keyIsDown(65) || keyIsDown(37))//a
             this.slewfloat -= slewadj;
-        if (keyIsDown(68))//d
+        if (keyIsDown(68) || keyIsDown(39))//d
             this.slewfloat += slewadj;
         if (keyIsDown(32))//spacebar
             //this.l()
@@ -113,6 +113,7 @@ class Boat {
         shapesIn.forEach(shape => {
             if (shape.checkP(this.pos)) {
                 this.pos = shape.getReturnTo(this.pos);
+                score++;
                 collided = true;
             }
         });

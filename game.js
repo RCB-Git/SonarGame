@@ -22,14 +22,14 @@ class Game {
         }
 
         this.tone = new p5.Oscillator('sine');
-        this.tone.amp(1, .1);
+        this.tone.amp(.15, .1);
         this.cPitch = 0;
         this.maxPitch = 800;
         this.minPitch = 0;
         this.tone.start();
 
         this.engineSound = new p5.Oscillator('triangle')
-        this.engineSound.amp(1, .1);
+        this.engineSound.amp(.15, .1);
         this.engineSound.start();
 
         this.cleanCanvas();
@@ -73,7 +73,7 @@ class Game {
         }
         if(this.final && this.countdown == 0)
         {
-            johnmadden();
+            this.progress();
         }
 
     }
@@ -131,9 +131,19 @@ class Game {
                 }//display line
 
                 //heading
-                stroke(0, 255, 0)
+                stroke(255, 255, 255)
+
+                push();
+                let size = 14;
+                translate(this.sonarRange, -this.sonarRange)
+                rotate(this.Player.heading);
+                line(0, 0, -size, size / 2);
+                line(0, 0, -size, -size / 2);
+                pop();
+
                 anglevec = p5.Vector.fromAngle(this.Player.heading).setMag(25);
-                line(this.sonarRange, -this.sonarRange, this.sonarRange + anglevec.x, - this.sonarRange + anglevec.y)
+
+              //  line(this.sonarRange, -this.sonarRange, this.sonarRange + anglevec.x, - this.sonarRange + anglevec.y)
 
                 //sweeper range table
                 cFormat(1)
@@ -278,7 +288,7 @@ class Game {
 
 
         let pos = new cPoint(this.Player.pos.x, this.Player.pos.y);
-        pos.add(p5.Vector.fromAngle(this.Player.heading - Math.PI, this.sonarRange / 4));
+        pos.add(p5.Vector.fromAngle(this.Player.heading - Math.PI, this.sonarRange*1 / 4 ));
 
         this.Enemies.push(new Boat(pos, false));
 

@@ -20,7 +20,7 @@ let clean = false
 let score = 0;
 let rep = 0;
 let rcount = 0;
-let add = 0;
+let ad = 0;
 let powerup = false
 let tutorialstarted = false
 function preload() {
@@ -94,7 +94,7 @@ function draw() {
 
             if (powerup) {
                 let str = "powering up....."
-                rep = rep + add
+                rep = rep + ad
                 if (rep > str.length) {
                     rep = str.length - 4;
                     rcount++
@@ -112,7 +112,7 @@ function draw() {
                 text("power on?", width / 2 - 100, height / 2 - sz / 2);
                 if (mouseIsPressed) {
                     powerup = true
-                    add = 5 / 50;
+                    ad = 5 / 50;
                 }
             }
 

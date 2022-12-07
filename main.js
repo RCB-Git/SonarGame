@@ -18,6 +18,11 @@ let StageNames = ["liminal", "Welcome", "Spelunking", "Breadcrumbs", "Precision"
 let clean = false
 
 let score = 0;
+let rep = 0;
+let rcount = 0;
+let add = 0;
+let powerup = false
+let tutorialstarted = false
 function preload() {
     pixelated = loadFont('Fonts/slkscr.ttf');
     for (let index = 0; index <= 6; index++) { // IMPORT LEVELS FROM FOLDER CHANGE NUMBER TO INCLUDE MORE
@@ -42,7 +47,7 @@ function setup() {
     beep = new p5.Oscillator('square');
     beep.amp(0);
     beep.freq(500);
-    beep.start();
+
 }
 
 function draw() {
@@ -67,8 +72,53 @@ function draw() {
 
     cFormat(3)
     if (!started) {
-        text("Diving blind V1.1 ... press  'Y' to start.", padding, padding - 5)
-        tutorial();
+        text("Diving blind V1.1 ", padding, padding - 5)
+
+        if (tutorialstarted)
+            tutorial();
+        else {
+
+
+            push();
+
+
+
+
+            stroke(0, 255, 0);
+            fill(0, 255, 0);
+            let sz = 50;
+            textSize(sz)
+
+
+
+
+            if (powerup) {
+                let str = "powering up....."
+                rep = rep + add
+                if (rep > str.length) {
+                    rep = str.length - 4;
+                    rcount++
+                    if (rcount > 5) {
+                        beep.start();
+                        tutorialstarted = true
+                    }
+                }
+                let adj = str.substring(0, rep);
+
+
+                text(adj, width / 2 - 200, height / 2 - sz / 2)
+            }
+            else {
+                text("power on?", width / 2 - 100, height / 2 - sz / 2);
+                if (mouseIsPressed) {
+                    powerup = true
+                    add = 5 / 50;
+                }
+            }
+
+            pop();
+        }
+
         clean = true;
     }
     else
@@ -155,7 +205,9 @@ function SFX() {
 }
 
 let prev;
+let dcount = 0
 function tutorial() {
+    dcount++;
     push()
     let txt = 25;
     translate(padding * 1.5, padding * 1.5)
@@ -192,17 +244,16 @@ function tutorial() {
         ctext("Press Y to begin", 30) + "\n" + delay(300, " ") + "\n\n" +
         "Autostart Initiated . . . " + delay(30, " ");
 
-    let prt = str.substring(0, (int)(frameCount * .5));
+    let prt = str.substring(0, (int)(dcount * .35));
     let edit = prt;
 
-    while (edit.substring(edit.length - 5) == "     ");
-    edit = edit.substring(0, edit.length - 1)
-    
-    if (frameCount % 50 > 25)
 
-        text(edit, 0, txt)
-    else
-        text(edit + "|", 0, txt)
+    {
+        if (frameCount % 50 > 25)
+            text(edit, 0, txt)
+        else
+            text(edit + "|", 0, txt)
+    }
 
     if (prt.length >= str.length) startGame();
 
@@ -213,6 +264,7 @@ function tutorial() {
         beep.amp(0)
 
     prev = prt.substring(prt.length - 1);
+
 
 
 
